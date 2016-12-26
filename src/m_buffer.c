@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -330,6 +330,17 @@ static int l_buffer_drawCircle(lua_State *L) {
 }
 
 
+static int l_buffer_drawRing(lua_State *L) {
+  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
+  int x = luaL_checknumber(L, 2);
+  int y = luaL_checknumber(L, 3);
+  int r = luaL_checknumber(L, 4);
+  sr_Pixel px = getColorArgs(L, 5, 0);
+  sr_drawRing(self->buffer, px, x, y, r);
+  return 0;
+}
+
+
 static int l_buffer_drawBuffer(lua_State *L) {
   int hasSub = 0;
   sr_Rect sub;
@@ -378,6 +389,7 @@ int luaopen_buffer(lua_State *L) {
     { "drawRect",       l_buffer_drawRect       },
     { "drawBox",        l_buffer_drawBox        },
     { "drawCircle",     l_buffer_drawCircle     },
+    { "drawRing",       l_buffer_drawRing       },
     { "drawBuffer",     l_buffer_drawBuffer     },
     { "draw",           l_buffer_drawBuffer     },
     { NULL, NULL }
@@ -388,4 +400,3 @@ int luaopen_buffer(lua_State *L) {
   lua_setfield(L, -2, "__index");
   return 1;
 }
-

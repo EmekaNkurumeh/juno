@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -24,13 +24,15 @@ static int screenHeight = 0;
 static int screenRef = 0;
 static int fullscreen = 0;
 static int resizable = 0;
+static int borderless = 0;
 Buffer *screen;
 
 
 static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
   int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
-              (resizable  ? SDL_RESIZABLE : 0);
+              (resizable  ? SDL_RESIZABLE : 0)  |
+              (borderless ? SDL_NOFRAME : 0);
   if (SDL_SetVideoMode(screenWidth, screenHeight, 32, flags) == NULL) {
     luaL_error(L, "could not set video mode");
   }
@@ -51,6 +53,7 @@ static int l_graphics_init(lua_State *L) {
   const char *title = luaL_optstring(L, 3, "Juno");
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
+  borderless = luax_optboolean(L, 6, 0);
   if (inited) {
     luaL_error(L, "graphics are already inited");
   }
