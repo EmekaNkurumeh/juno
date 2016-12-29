@@ -1,18 +1,20 @@
-# Callbacks
-# juno.Data
-# juno.Source
-# juno.Buffer
-# juno.Gif
-# juno.Font
-# juno.mouse
-# juno.system
-# juno.audio
-# juno.fs
-# juno.time
-# juno.graphics
-# juno.bufferfx
-# juno.debug
-# juno.keyboard
+## Callbacks
+#### `juno.onLoad()`
+#### `juno.onLoad()`
+## juno.Data
+## juno.Source
+## juno.Buffer
+## juno.Gif
+## juno.Font
+## juno.mouse
+## juno.system
+## juno.audio
+## juno.fs
+## juno.time
+## juno.graphics
+## juno.bufferfx
+## juno.debug
+## juno.keyboard
 
 {
    Data: {
