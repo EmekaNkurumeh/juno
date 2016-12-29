@@ -3,103 +3,172 @@
 #### juno.onError
 #### juno.onDraw
 #### juno.getVersion
-#### juno._pcall
-#### juno._onAudio
 #### juno.onUpdate
-#### juno._onStep
 #### juno.onLoad
-
+#### juno._pcall
+#### juno._argv
 
 ## juno.Data
-
+#### juno.Data.__gc
+#### juno.Data.fromFile
+#### juno.Data.getLength
+#### juno.Data.fromString
+#### juno.Data.toString
 
 ## juno.Source
-
+#### juno.Source.__gc
+#### juno.Source.setPan
+#### juno.Source.getLength
+#### juno.Source.pause
+#### juno.Source.getState
+#### juno.Source.setDestination
+#### juno.Source.setRate
+#### juno.Source.stop
+#### juno.Source.setGain
+#### juno.Source.play
+#### juno.Source.fromData
+#### juno.Source.setLoop
+#### juno.Source.fromBlank
+#### juno.Source.setCallback
 
 ## juno.Buffer
-
+#### juno.Buffer.__gc
+#### juno.Buffer.copyPixels
+#### juno.Buffer.setBlend
+#### juno.Buffer.fromString
+#### juno.Buffer.drawText
+#### juno.Buffer.drawRing
+#### juno.Buffer.fromFile
+#### juno.Buffer.getWidth
+#### juno.Buffer.getSize
+#### juno.Buffer.setClip
+#### juno.Buffer.fromBlank
+#### juno.Buffer.draw
+#### juno.Buffer.drawCircle
+#### juno.Buffer.reset
+#### juno.Buffer.setColor
+#### juno.Buffer.clone
+#### juno.Buffer.drawBox
+#### juno.Buffer.drawRect
+#### juno.Buffer.drawPixel
+#### juno.Buffer.drawLine
+#### juno.Buffer.floodFill
+#### juno.Buffer.getPixel
+#### juno.Buffer.noise
+#### juno.Buffer.setPixel
+#### juno.Buffer.setAlpha
+#### juno.Buffer.drawBuffer
+#### juno.Buffer.clear
+#### juno.Buffer.getHeight
 
 ## juno.Gif
-
+#### juno.Gif.__gc
+#### juno.Gif.new
+#### juno.Gif.close
+#### juno.Gif.update
 
 ## juno.Font
-
+#### juno.Font.__gc
+#### juno.Font.fromFile
+#### juno.Font.render
+#### juno.Font.fromEmbedded
+#### juno.Font.__index
+#### juno.Font.fromString
+#### juno.Font.getWidth
+#### juno.Font.getHeight
 
 ## juno.mouse
-
+#### juno.mouse.isDown
+#### juno.mouse.wasPressed
+#### juno.mouse.setVisible
+#### juno.mouse.reset
+#### juno.mouse.getPosition
+#### juno.mouse.setPosition
+#### juno.mouse.getX
+#### juno.mouse.getY
 
 ## juno.system
-
+#### juno.system.info
+#### juno.system.poll
 
 ## juno.audio
-
+#### juno.audio.init
+#### juno.audio.master
 
 ## juno.fs
-
+#### juno.fs.append
+#### juno.fs.getSize
+#### juno.fs.delete
+#### juno.fs.isDir
+#### juno.fs.unmount
+#### juno.fs.getModified
+#### juno.fs.exists
+#### juno.fs.mount
+#### juno.fs.setWritePath
+#### juno.fs.write
+#### juno.fs.read
+#### juno.fs.listDir
+#### juno.fs.makeDirs
 
 ## juno.time
-
+#### juno.time.getAverage
+#### juno.time.getNow
+#### juno.time.getTime
+#### juno.time.getDelta
+#### juno.time.sleep
+#### juno.time.step
+#### juno.time.getFps
 
 ## juno.graphics
-#### juno.init
-#### juno.setColor
-#### juno.setMaxFps
-#### juno.drawCircle
-#### juno.getPixel
-#### juno.drawBuffer
-#### juno.floodFill
-#### juno.__gc
-#### juno.copyPixels
-#### juno.setFullscreen
-#### juno.setBlend
-#### juno.drawRing
-#### juno.getWidth
-#### juno.setClearColor
-#### juno.getHeight
-#### juno.clear
-#### juno.reset
-#### juno.drawBox
-#### juno.clone
-#### juno.setAlpha
-#### juno.setPixel
-#### juno.screen
-#### juno.noise
-#### juno.getSize
-#### juno.drawPixel
-#### juno.draw
-#### juno.drawRect
-#### juno.setClip
-#### juno.drawLine
-#### juno.drawText
+#### juno.graphics.setColor
+#### juno.graphics.setMaxFps
+#### juno.graphics.drawCircle
+#### juno.graphics.getPixel
+#### juno.graphics.drawBuffer
+#### juno.graphics.floodFill
+#### juno.graphics.__gc
+#### juno.graphics.copyPixels
+#### juno.graphics.setFullscreen
+#### juno.graphics.setBlend
+#### juno.graphics.drawRing
+#### juno.graphics.getWidth
+#### juno.graphics.setClearColor
+#### juno.graphics.getHeight
+#### juno.graphics.clear
+#### juno.graphics.reset
+#### juno.graphics.drawBox
+#### juno.graphics.clone
+#### juno.graphics.setAlpha
+#### juno.graphics.setPixel
+#### juno.graphics.screen
+#### juno.graphics.noise
+#### juno.graphics.getSize
+#### juno.graphics.drawPixel
+#### juno.graphics.draw
+#### juno.graphics.drawRect
+#### juno.graphics.setClip
+#### juno.graphics.drawLine
+#### juno.graphics.drawText
 
 ## juno.bufferfx
-#### juno.desaturate 
-#### juno.dissolve 
-#### juno.blur 
-#### juno.wave 
-#### juno.mask 
-#### juno.palette 
-#### juno.displace 
-
+#### juno.bufferfx.desaturate
+#### juno.bufferfx.dissolve
+#### juno.bufferfx.blur
+#### juno.bufferfx.wave
+#### juno.bufferfx.mask
+#### juno.bufferfx.palette
+#### juno.bufferfx.displace
 
 ## juno.debug
-#### juno.getFocused
-#### juno.getVisible
-#### juno._draw
-#### juno.removeIndicator
-#### juno._onEvent
-#### juno.addIndicator
-#### juno.setFocused
-#### juno.clear
-#### juno.setVisible
-
+#### juno.debug.getFocused
+#### juno.debug.getVisible
+#### juno.debug.removeIndicator
+#### juno.debug.addIndicator
+#### juno.debug.setFocused
+#### juno.debug.clear
+#### juno.debug.setVisible
 
 ## juno.keyboard
-#### juno.isDown
-#### juno.reset
-#### juno.wasPressed
-#### juno._onEvent
-
-
-## misc.
-
+#### juno.keyboard.isDown
+#### juno.keyboard.reset
+#### juno.keyboard.wasPressed

@@ -122,5 +122,6 @@ end
 
 
 function juno.onDraw()
-  juno.graphics.copyPixels(G.field, 0, 0, nil, G.scale)
+  juno.bufferfx.dissolve(G.field,.45)
+  juno.graphics.draw(G.field, 0, 0, nil, nil,G.scale)
 end
