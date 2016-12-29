@@ -27,8 +27,9 @@ function juno.onLoad(dt)
 end
 
 
-function juno.onKeyDown(k)
+function juno.onKeyDown(k,e)
   -- Handle player movement keys
+  print(e)
   if k == "left" or k == "up" or k == "down" or k == "right" then
     G.player.direction = k
   end
