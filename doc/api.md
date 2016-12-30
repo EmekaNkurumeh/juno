@@ -14,28 +14,21 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 * [juno.debug](#junodebug)
 
 ## [Objects](#objects)
-* [Data](#data)
-* [Source](#source)
-* [Buffer](#buffer)
-* [Gif](#gif)
-* [Font](#font)
+* [Data](#junodata)
+* [Source](#junosource)
+* [Buffer](#junobuffer)
+* [Gif](#junogif)
+* [Font](#junofont)
 
 ## Callbacks
-###### `juno.onKeyDown(key, char)`
-#### juno.onError
-###### `juno.onError(msg, stacktrace)`
-#### juno.onDraw
-###### `juno.onDraw()`
-#### juno.getVersion
-###### `juno.getVersion()`
-#### juno.onUpdate
-###### `juno.onUpdate(dt)`
-#### juno.onLoad
-###### `juno.onLoad()`
-#### juno._pcall
-###### `juno._pcall(fn, ...)`
-#### juno._argv
-###### `juno._argv`
+##### `juno.onKeyDown(key, char)`
+##### `juno.onError(msg, stacktrace)`
+##### `juno.onDraw()`
+##### `juno.getVersion()`
+##### `juno.onUpdate(dt)`
+##### `juno.onLoad()`
+##### `juno._pcall(fn, ...)`
+##### `juno._argv`
 
 ## juno.Data
 #### Data:__gc
