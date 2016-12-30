@@ -1,4 +1,24 @@
-## callbacks
+https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
+# Juno API Reference
+
+## [Callbacks](#callbacks-10)
+## [Modules](#modules)
+* [juno.graphics](#junographics)
+* [juno.mouse](#junomouse)
+* [juno.system](#junosystem)
+* [juno.audio](#junoaudio)
+* [juno.fs](#junofs)
+* [juno.time](#junotime)
+* [juno.bufferfx](#junobufferfx)
+* [juno.debug](#junodebug)
+
+## [Objects](#objects)
+* [Data](#data)
+* [Source](#source)
+* [Buffer](#buffer)
+* [Gif](#gif)
+* [Font](#font)
+
 #### juno.onKeyDown
 ###### `juno.onKeyDown(key, char)`
 #### juno.onError
