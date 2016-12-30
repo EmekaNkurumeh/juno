@@ -85,6 +85,10 @@ static int l_graphics_setFullscreen(lua_State *L) {
   return 0;
 }
 
+static int l_graphics_getFullscreen(lua_State *L) {
+  lua_pushboolean(L, fullscreen);
+  return 1;
+}
 
 static int l_graphics_setMaxFps(lua_State *L) {
   m_graphics_maxFps = luaL_optnumber(L, 1, 60);
@@ -96,6 +100,7 @@ int luaopen_graphics(lua_State *L) {
   luaL_Reg reg[] = {
     { "init",           l_graphics_init           },
     { "setFullscreen",  l_graphics_setFullscreen  },
+    { "getFullscreen",  l_graphics_getFullscreen  },
     { "setMaxFps",      l_graphics_setMaxFps      },
     { NULL, NULL }
   };

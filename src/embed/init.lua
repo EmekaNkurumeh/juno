@@ -10,6 +10,17 @@ local function call(fn, ...)
   if fn then return fn(...) end
 end
 
+function string:split(sep)
+  local sep, fields = sep or ":", {}
+  local pattern = string.format("([^%s]+)", sep)
+  self:gsub(pattern, function(c) fields[#fields+1] = c end)
+  return fields
+end
+
+function string:slice(pos)
+  return self:sub(1,pos), self:sub(pos+1)
+end
+
 local function merge(...)
   local res = {}
   for i = 1, select("#", ...) do
@@ -50,8 +61,8 @@ end
 
 local eventHandlers = {
   keydown = function(e)
-    call(juno.keyboard._onEvent, e)
     call(juno.debug._onEvent, e)
+    call(juno.keyboard._onEvent, e)
     call(juno.onKeyDown, e.key, e.char)
     end,
   keyup = function(e)

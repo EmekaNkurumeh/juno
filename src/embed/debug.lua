@@ -15,6 +15,7 @@ local focused = false
 local indicators = {}
 local lines = {}
 local inputbuf = ""
+local _int = {index = 0}
 
 -- Override print
 local _print = print
@@ -32,7 +33,7 @@ print = function(...)
       table.insert(lines, line)
     end
   else
-    table.insert(lines, str) 
+    table.insert(lines, str)
   end
   while #lines > 6 do
     table.remove(lines, 1)
@@ -110,12 +111,12 @@ local function draw()
   if focused then
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
-    local caret = (juno.time.getTime() % .6 < .3) and "_" or ""
+    _int.caret = (juno.time.getTime() % .6 < .3) and "_" or ""
     w = math.max(w, font:getWidth(inputbuf .. "_"))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
-    juno.graphics.drawText(font, inputbuf .. caret, 8, y)
+    juno.graphics.drawText(font, inputbuf.. _int.caret, 8, y)
   end
   -- Draw console output text
   if #lines > 0 then
@@ -133,7 +134,7 @@ local function draw()
       juno.graphics.drawText(font, v, 8, y - oy)
     end
   end
-end 
+end
 
 
 local function init()
@@ -168,7 +169,15 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
-      inputbuf = inputbuf:sub(1, #inputbuf - 1)
+      _int.index = #inputbuf - 1
+      inputbuf = inputbuf:sub(1, _int.index)
+    elseif e.key == "tab" then
+      _int.index = #inputbuf + 2
+      inputbuf = inputbuf .. "  "
+    elseif e.key == "right" then
+
+    elseif e.key == "left" then
+
     elseif e.key == "return" then
       local fn, err = loadstring(inputbuf, "=input")
       if fn then
@@ -177,9 +186,12 @@ function juno.debug._onEvent(e)
         onError(err)
       end
       inputbuf = ""
+      index = 0
     elseif e.char then
       inputbuf = inputbuf .. e.char
+      _int.index = _int.index + 1
     end
+    print(_int.index)
   end
 end
 

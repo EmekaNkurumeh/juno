@@ -153,6 +153,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.graphics.floodFill(x, y, r, g, b, a)`
 #### `juno.graphics.copyPixels(src, x, y, sub, sx, sy)`
 #### `juno.graphics.setFullscreen(fullscreen)`
+#### `juno.graphics.getFullscreen()`
 #### `juno.graphics.setBlend(mode)`
 #### `juno.graphics.drawRing(x, y, radius, r, b, g, a)`
 #### `juno.graphics.getWidth()`

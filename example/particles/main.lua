@@ -22,7 +22,7 @@ end
 
 function juno.onUpdate(dt)
   if juno.keyboard.wasPressed("escape") then os.exit() end
-  if juno.keyboard.wasPressed("tab") then G.fullscreen = not G.fullscreen juno.graphics.setFullscreen(G.fullscreen) end
+  if juno.keyboard.wasPressed("`") then juno.debug.setFocused(not juno.debug.getFocused()) end
   for i, p in ipairs(G.particles) do
     p.x = p.x + p.vx * dt
     p.y = p.y + p.vy * dt
