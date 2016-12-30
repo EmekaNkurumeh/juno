@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -9,7 +9,7 @@
 #include "luax.h"
 #include <SDL/SDL.h>
 
-#define JUNO_VERSION "0.0.0"
+#define JUNO_VERSION "0.1.0"
 
 
 static int l_juno_getVersion(lua_State *L) {

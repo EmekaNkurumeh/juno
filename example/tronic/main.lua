@@ -29,7 +29,6 @@ end
 
 function juno.onKeyDown(k,e)
   -- Handle player movement keys
-  print(e)
   if k == "left" or k == "up" or k == "down" or k == "right" then
     G.player.direction = k
   end
@@ -123,6 +122,5 @@ end
 
 
 function juno.onDraw()
-  juno.bufferfx.dissolve(G.field,.45)
   juno.graphics.draw(G.field, 0, 0, nil, nil,G.scale)
 end

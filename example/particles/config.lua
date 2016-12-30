@@ -1,12 +1,14 @@
 
 G = {
-  width   = 200,
-  height  = 120,
-  scale   = 3,
+  width   = 160,
+  height  = 160,
+  scale   = 4,
+  fullscreen = false
 }
 
 return {
   title   = "Particles",
   width   = G.width * G.scale,
   height  = G.height * G.scale,
+  borderless = true,
 }

@@ -1,6 +1,7 @@
 
 
 function juno.onLoad(dt)
+  math.randomseed(juno.time.getNow())
   juno.debug.setVisible(true)
   G.screen = juno.Buffer.fromBlank(G.width, G.height)
   G.particle = juno.Buffer.fromFile("data/image/particle.png")
@@ -20,6 +21,8 @@ end
 
 
 function juno.onUpdate(dt)
+  if juno.keyboard.wasPressed("escape") then os.exit() end
+  if juno.keyboard.wasPressed("tab") then G.fullscreen = not G.fullscreen juno.graphics.setFullscreen(G.fullscreen) end
   for i, p in ipairs(G.particles) do
     p.x = p.x + p.vx * dt
     p.y = p.y + p.vy * dt
@@ -29,7 +32,7 @@ function juno.onUpdate(dt)
       p.a = p.a - dt * 3
       if p.a < 0 then
         local r = math.random() * math.pi * 2
-        p.x = math.cos(r) * 20 
+        p.x = math.cos(r) * 20
         p.y = math.sin(r) * 20
         p.vx = (1 - math.random() * 2) * 90
         p.vy = (1 - math.random() * 2) * 90
@@ -50,5 +53,6 @@ function juno.onDraw()
     G.screen:draw(G.particle, G.width / 2 + p.x, G.height / 2 + p.y,
                   nil, 0, p.s, p.s, 16, 16)
   end
-  juno.graphics.copyPixels(G.screen, 0, 0, nil, G.scale)
+  juno.bufferfx.dissolve(G.screen,math.random())
+  juno.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)
 end
