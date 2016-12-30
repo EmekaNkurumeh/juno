@@ -12,7 +12,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 * [juno.bufferfx](#junobufferfx)
 * [juno.debug](#junodebug)
 
-## [Objects](#objects)
+## [Objects](#objects+89)
 * [Data](#data)
 * [Source](#source)
 * [Buffer](#buffer)
