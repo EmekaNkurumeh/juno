@@ -1,9 +1,9 @@
 https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 # Juno API Reference
 
-## [Callbacks](#callbacks)
+## [Callbacks](#callbacks-1)
 
-## [Modules](#modules)
+## [Modules](#modules-1)
 * [juno.graphics](#junographics)
 * [juno.mouse](#junomouse)
 * [juno.system](#junosystem)
@@ -13,7 +13,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 * [juno.bufferfx](#junobufferfx)
 * [juno.debug](#junodebug)
 
-## [Objects](#objects)
+## [Objects](#objects-1)
 * [Data](#junodata)
 * [Source](#junosource)
 * [Buffer](#junobuffer)
@@ -31,46 +31,27 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 ##### `juno._argv`
 
 ## juno.Data
-#### Data:__gc
-###### ``
-#### juno.Data.fromFile
-###### ``
-#### juno.Data.getLength
-###### ``
-#### juno.Data.fromString
-###### ``
-#### juno.Data.toString
-###### ``
+###### `juno.Data.fromFile(filename)`
+###### `juno.Data.fromString(string)`
+###### `Data:getLength()`
+###### `Data:toString()`
+###### `Data:__gc()`
 
 ## juno.Source
-#### juno.Source.__gc
-###### ``
-#### juno.Source.setPan
-###### ``
-#### juno.Source.getLength
-###### ``
-#### juno.Source.pause
-###### ``
-#### juno.Source.getState
-###### ``
-#### juno.Source.setDestination
-###### ``
-#### juno.Source.setRate
-###### ``
-#### juno.Source.stop
-###### ``
-#### juno.Source.setGain
-###### ``
-#### juno.Source.play
-###### ``
-#### juno.Source.fromData
-###### ``
-#### juno.Source.setLoop
-###### ``
-#### juno.Source.fromBlank
-###### ``
-#### juno.Source.setCallback
-###### ``
+###### `juno.Source.fromBlank()`
+###### `juno.Source.fromData(data)`
+###### `Source:setPan(pan)`
+###### `Source:getLength()`
+###### `Source:pause()`
+###### `Source:getState()`
+###### `Source:setDestination(dest)`
+###### `Source:setRate(rate)`
+###### `Source:stop()`
+###### `Source:setGain(gain)`
+###### `Source:play(reset)`
+###### `Source:setLoop(loop)`
+###### `Source:setCallback(callback)`
+###### `Source:__gc()`
 
 ## juno.Buffer
 #### juno.Buffer.__gc
