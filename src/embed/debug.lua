@@ -17,7 +17,7 @@ local lines = {}
 local inputbuf = ""
 local enputbuf = ""
 local outputbuf = ""
-local size, cursor = 1, 1
+local size, cursor = 1, 0
 
 -- Override print
 local _print = print
@@ -172,7 +172,7 @@ function juno.debug._onEvent(e)
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
       size = math.max(1, #outputbuf - 1)
-      cursor = math.max(1, cursor - 1)
+      cursor = math.max(0, cursor - 1)
       outputbuf = outputbuf:sub(1, size)
     elseif e.key == "tab" then
       size = #outputbuf + 2
@@ -181,7 +181,7 @@ function juno.debug._onEvent(e)
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
-      cursor = math.max(1, cursor - 1)
+      cursor = math.max(0, cursor - 1)
     elseif e.key == "return" then
       local fn, err = loadstring(outputbuf, "=input")
       if fn then
@@ -191,7 +191,7 @@ function juno.debug._onEvent(e)
       end
       outputbuf = ""
       inputbuf, enputbuf = "", ""
-      size, cursor = 1, 1
+      size, cursor = 1, 0
     elseif e.char then
       outputbuf = outputbuf .. e.char
       size = size + 1
