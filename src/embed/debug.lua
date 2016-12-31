@@ -17,7 +17,7 @@ local lines = {}
 local inputbuf = ""
 local enputbuf = ""
 local outputbuf = ""
-local _int = {size = 0, cursor = 0}
+local size, cursor = 1, 1
 
 -- Override print
 local _print = print
@@ -113,12 +113,12 @@ local function draw()
   if focused then
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
-    _int.caret = (juno.time.getTime() % .6 < .3) and "_" or ""
+    caret = (juno.time.getTime() % .6 < .3) and "_" or ""
     w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
-    juno.graphics.drawText(font, inputbuf .. _int.caret .. enputbuf, 8, y)
+    juno.graphics.drawText(font, inputbuf .. caret .. enputbuf, 8, y)
   end
   -- Draw console output text
   if #lines > 0 then
@@ -171,19 +171,17 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
-      _int.size = #outputbuf - 1
-      _int.cursor = _int.size
-      outputbuf = outputbuf:sub(1, _int.size)
+      size = math.max(1, #outputbuf - 1)
+      cursor = math.max(1, cursor - 1)
+      outputbuf = outputbuf:sub(1, size)
     elseif e.key == "tab" then
-      _int.size = #outputbuf + 2
-      _int.cursor = _int.size
+      size = #outputbuf + 2
+      cursor = cursor + 2
       outputbuf = outputbuf .. "  "
     elseif e.key == "right" then
-      _int.cursor = _int.cursor + 1
-      -- inputbuf,enputbuf = outputbuf:slice(_int.cursor)
+      cursor = cursor + 1
     elseif e.key == "left" then
-      _int.cursor = _int.cursor - 1
-      -- inputbuf,enputbuf = outputbuf:slice(_int.cursor)
+      cursor = math.max(1, cursor - 1)
     elseif e.key == "return" then
       local fn, err = loadstring(outputbuf, "=input")
       if fn then
@@ -192,17 +190,15 @@ function juno.debug._onEvent(e)
         onError(err)
       end
       outputbuf = ""
-      inputbuf = ""
-      enputbuf = ""
-      _int.size = 0
-      _int.cursor = 0
+      inputbuf, enputbuf = "", ""
+      size, cursor = 1, 1
     elseif e.char then
       outputbuf = outputbuf .. e.char
-      _int.size = _int.size + 1
-      _int.cursor = _int.size
+      size = size + 1
+      cursor = cursor + 1
     end
-    inputbuf,enputbuf = outputbuf:slice(_int.cursor)
-    print(_int.size)
+    inputbuf,enputbuf = outputbuf:slice(cursor)
+    print(size .. " : " .. cursor)
   end
 end
 
