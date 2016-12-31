@@ -15,7 +15,9 @@ local focused = false
 local indicators = {}
 local lines = {}
 local inputbuf = ""
-local _int = {index = 0}
+local enputbuf = ""
+local outputbut = ""
+local _int = {size = 0,cursor}
 
 -- Override print
 local _print = print
@@ -112,11 +114,11 @@ local function draw()
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
     _int.caret = (juno.time.getTime() % .6 < .3) and "_" or ""
-    w = math.max(w, font:getWidth(inputbuf .. "_"))
+    w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
-    juno.graphics.drawText(font, inputbuf.. _int.caret, 8, y)
+    juno.graphics.drawText(font, inputbuf .. _int.caret .. enputbuf, 8, y)
   end
   -- Draw console output text
   if #lines > 0 then
@@ -169,29 +171,31 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
-      _int.index = #inputbuf - 1
-      inputbuf = inputbuf:sub(1, _int.index)
+      _int.size = #inputbuf + #enputbuf - 1
+      inputbuf = inputbuf:sub(1, _int.size)
     elseif e.key == "tab" then
-      _int.index = #inputbuf + 2
+      _int.size = #inputbuf + #enputbuf + 2
       inputbuf = inputbuf .. "  "
     elseif e.key == "right" then
-
+      _int.size = _int.size + 1
+      inputbuf,enputbuf = inputbuf:slice(_int.size)
     elseif e.key == "left" then
-
+      _int.size = _int.size - 1
+      inputbuf,enputbuf = inputbuf:slice(_int.size)
     elseif e.key == "return" then
-      local fn, err = loadstring(inputbuf, "=input")
+      local fn, err = loadstring(inputbuf .. enputbuf, "=input")
       if fn then
         xpcall(fn, onError)
       else
         onError(err)
       end
       inputbuf = ""
-      index = 0
+      size = 0
     elseif e.char then
       inputbuf = inputbuf .. e.char
-      _int.index = _int.index + 1
+      _int.size = _int.size + 1
     end
-    print(_int.index)
+    print(_int.size)
   end
 end
 
