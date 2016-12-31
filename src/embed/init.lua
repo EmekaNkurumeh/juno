@@ -5,9 +5,12 @@
 -- under the terms of the MIT license. See LICENSE for details.
 --
 
+-------------------------------------------------------------------------------
+-- Functions missing from standard library
+-------------------------------------------------------------------------------
 
-local function call(fn, ...)
-  if fn then return fn(...) end
+function math.clamp(x, min, max)
+  return x < min and min or (x > max and max or x)
 end
 
 function string:split(sep)
@@ -19,6 +22,10 @@ end
 
 function string:slice(pos)
   return self:sub(1,pos), self:sub(pos+1)
+end
+
+local function call(fn, ...)
+  if fn then return fn(...) end
 end
 
 local function merge(...)
