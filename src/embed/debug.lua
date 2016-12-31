@@ -180,10 +180,10 @@ function juno.debug._onEvent(e)
       outputbuf = outputbuf .. "  "
     elseif e.key == "right" then
       _int.cursor = _int.cursor + 1
-      inputbuf,enputbuf = outputbuf:slice(_int.cursor)
+      -- inputbuf,enputbuf = outputbuf:slice(_int.cursor)
     elseif e.key == "left" then
       _int.cursor = _int.cursor - 1
-      inputbuf,enputbuf = outputbuf:slice(_int.cursor)
+      -- inputbuf,enputbuf = outputbuf:slice(_int.cursor)
     elseif e.key == "return" then
       local fn, err = loadstring(outputbuf, "=input")
       if fn then
@@ -201,6 +201,7 @@ function juno.debug._onEvent(e)
       _int.size = _int.size + 1
       _int.cursor = _int.size
     end
+    inputbuf,enputbuf = outputbuf:slice(_int.cursor)
     print(_int.size)
   end
 end
