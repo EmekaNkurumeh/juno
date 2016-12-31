@@ -16,8 +16,8 @@ local indicators = {}
 local lines = {}
 local inputbuf = ""
 local enputbuf = ""
-local outputbut = ""
-local _int = {size = 0,cursor}
+local outputbuf = ""
+local _int = {size = 0, cursor = 0}
 
 -- Override print
 local _print = print
@@ -171,29 +171,35 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
-      _int.size = #inputbuf + #enputbuf - 1
-      inputbuf = inputbuf:sub(1, _int.size)
+      _int.size = #outputbuf - 1
+      _int.cursor = _int.size
+      outputbuf = outputbuf:sub(1, _int.size)
     elseif e.key == "tab" then
-      _int.size = #inputbuf + #enputbuf + 2
-      inputbuf = inputbuf .. "  "
+      _int.size = #outputbuf + 2
+      _int.cursor = _int.size
+      outputbuf = outputbuf .. "  "
     elseif e.key == "right" then
-      _int.size = _int.size + 1
-      inputbuf,enputbuf = inputbuf:slice(_int.size)
+      _int.cursor = _int.cursor + 1
+      inputbuf,enputbuf = outputbuf:slice(_int.cursor)
     elseif e.key == "left" then
-      _int.size = _int.size - 1
-      inputbuf,enputbuf = inputbuf:slice(_int.size)
+      _int.cursor = _int.cursor - 1
+      inputbuf,enputbuf = outputbuf:slice(_int.cursor)
     elseif e.key == "return" then
-      local fn, err = loadstring(inputbuf .. enputbuf, "=input")
+      local fn, err = loadstring(outputbuf, "=input")
       if fn then
         xpcall(fn, onError)
       else
         onError(err)
       end
+      outputbuf = ""
       inputbuf = ""
-      size = 0
+      enputbuf = ""
+      _int.size = 0
+      _int.cursor = 0
     elseif e.char then
-      inputbuf = inputbuf .. e.char
+      outputbuf = outputbuf .. e.char
       _int.size = _int.size + 1
+      _int.cursor = _int.size
     end
     print(_int.size)
   end
