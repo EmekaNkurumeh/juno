@@ -175,10 +175,10 @@ function juno.debug._onEvent(e)
       cursor = math.max(0, cursor - 1)
       outputbuf = outputbuf:sub(1, size)
     elseif e.key == "tab" then
-      size = #outputbuf + 2
       local _,temp = outputbuf:slice(cursor)
       cursor = cursor + 2 
       outputbuf = _ .. "  " .. temp
+      size = #outputbuf
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
@@ -194,9 +194,10 @@ function juno.debug._onEvent(e)
       inputbuf, enputbuf = "", ""
       size, cursor = 0, 0
     elseif e.char then
-      outputbuf = outputbuf .. e.char
-      size = size + 1
-      cursor = cursor + 1
+      local _,temp = outputbuf:slice(cursor)
+      cursor = cursor + 1 
+      outputbuf = _ .. e.char .. temp
+      size = #outputbuf
     end
     inputbuf,enputbuf = outputbuf:slice(cursor)
     print(size .. " : " .. cursor)
