@@ -113,8 +113,8 @@ local function draw()
   if focused then
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
-    caret = (juno.time.getTime() % .6 < .3) and "_" or ""
-    w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
+    caret = (juno.time.getTime() % .6 < .3) and "|" or ""
+    w = math.max(w, font:getWidth(inputbuf .. "|" .. enputbuf))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
@@ -177,7 +177,7 @@ function juno.debug._onEvent(e)
     elseif e.key == "tab" then
       size = #outputbuf + 2
       cursor = cursor + 2
-      outputbuf = outputbuf .. "  "
+      inputbuf = inputbuf .. "  "
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
