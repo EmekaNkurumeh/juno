@@ -2,11 +2,15 @@
 
 function juno.onLoad()
   juno.debug.setVisible(true)
-
   vis = {}
   freq = 0
   gain = 0
-
+  juno.debug.addIndicator(function()
+    return "freq",freq
+  end)
+  juno.debug.addIndicator(function()
+    return "gain",gain
+  end)
   local delay = { idx = 0, max = 44100 * .4 }
   local phase = 0
   local xfreq = 0

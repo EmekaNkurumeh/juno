@@ -95,6 +95,11 @@ static int l_graphics_setMaxFps(lua_State *L) {
   return 0;
 }
 
+static int l_graphics_getMaxFps(lua_State *L) {
+  lua_pushnumber(L, m_graphics_maxFps);
+  return 1;
+}
+
 
 int luaopen_graphics(lua_State *L) {
   luaL_Reg reg[] = {
@@ -102,6 +107,7 @@ int luaopen_graphics(lua_State *L) {
     { "setFullscreen",  l_graphics_setFullscreen  },
     { "getFullscreen",  l_graphics_getFullscreen  },
     { "setMaxFps",      l_graphics_setMaxFps      },
+    { "getMaxFps",      l_graphics_getMaxFps      },
     { NULL, NULL }
   };
   luaL_newlib(L, reg);
