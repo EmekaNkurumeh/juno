@@ -176,8 +176,9 @@ function juno.debug._onEvent(e)
       outputbuf = outputbuf:sub(1, size)
     elseif e.key == "tab" then
       size = #outputbuf + 2
-      cursor = cursor + 2
-      outputbuf = outputbuf .. "  "
+      local _,temp = outputbuf:slice(cursor)
+      cursor = cursor + 2 
+      outputbuf = _ .. "  " .. temp
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
