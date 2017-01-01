@@ -192,13 +192,13 @@ function juno.debug._onEvent(e)
     elseif e.key == "up" then
       vursor = math.max(1,vursor - 1)
       outputbuf = history[vursor]
-      cursor = 0
       size = #outputbuf
+      cursor = size
     elseif e.key == "down" then
       vursor = math.min(#history,vursor + 1)
       outputbuf = history[vursor]
-      cursor = 0
       size = #outputbuf
+      cursor = size
     elseif e.key == "return" then
       local fn, err = loadstring(outputbuf, "=input")
       if fn then
