@@ -118,7 +118,7 @@ local function draw()
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
-    juno.graphics.drawText(font, inputbuf .. caret .. enputbuf, 8, y)
+    juno.graphics.drawText(font, "> " .. inputbuf .. caret .. enputbuf, 8, y)
   end
   -- Draw console output text
   if #lines > 0 then
