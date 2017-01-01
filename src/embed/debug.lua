@@ -195,7 +195,7 @@ function juno.debug._onEvent(e)
       cursor = 0
       size = #outputbuf
     elseif e.key == "down" then
-      vursor = math.min(#history,vursor - 1)
+      vursor = math.min(#history,vursor + 1)
       outputbuf = history[vursor]
       cursor = 0
       size = #outputbuf
