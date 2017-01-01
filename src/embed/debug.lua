@@ -176,11 +176,13 @@ function juno.debug._onEvent(e)
       size = math.max(0, #outputbuf - 1)
       cursor = math.max(0, cursor - 1)
       outputbuf = outputbuf:sub(1, size)
+      history[1] = outputbuf
     elseif e.key == "tab" then
       local _,temp = outputbuf:slice(cursor)
-      cursor = cursor + 2 
+      cursor = cursor + 2
       outputbuf = _ .. "  " .. temp
       size = #outputbuf
+      history[1] = outputbuf
     elseif e.key == "home" then
       cursor = 0
     elseif e.key == "end" then
@@ -190,12 +192,12 @@ function juno.debug._onEvent(e)
     elseif e.key == "left" then
       cursor = math.max(0, cursor - 1)
     elseif e.key == "up" then
-      vursor = math.max(1,vursor - 1)
+      vursor = math.min(#history,vursor + 1)
       outputbuf = history[vursor]
       size = #outputbuf
       cursor = size
     elseif e.key == "down" then
-      vursor = math.min(#history,vursor + 1)
+      vursor = math.max(1,vursor - 1)
       outputbuf = history[vursor]
       size = #outputbuf
       cursor = size
@@ -206,16 +208,18 @@ function juno.debug._onEvent(e)
       else
         onError(err)
       end
-      table.insert(history,outputbuf)
+      table.insert(history, 2, outputbuf)
       outputbuf = ""
       inputbuf, enputbuf = "", ""
       size, cursor = 0, 0
-      vursor = vursor + 1
+      -- vursor = vursor + 1
+      history[1] = ""
     elseif e.char then
       local _,temp = outputbuf:slice(cursor)
-      cursor = cursor + 1 
+      cursor = cursor + 1
       outputbuf = _ .. e.char .. temp
       size = #outputbuf
+      history[1] = outputbuf
     end
     inputbuf,enputbuf = outputbuf:slice(cursor)
   end
