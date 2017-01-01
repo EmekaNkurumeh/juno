@@ -179,6 +179,10 @@ function juno.debug._onEvent(e)
       cursor = cursor + 2 
       outputbuf = _ .. "  " .. temp
       size = #outputbuf
+    elseif e.key == "home" then
+      cursor = 0
+    elseif e.key == "end" then
+      cursor = size
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
@@ -200,7 +204,6 @@ function juno.debug._onEvent(e)
       size = #outputbuf
     end
     inputbuf,enputbuf = outputbuf:slice(cursor)
-    print(size .. " : " .. cursor)
   end
 end
 
