@@ -17,7 +17,7 @@ local lines = {}
 local inputbuf = ""
 local enputbuf = ""
 local outputbuf = ""
-local size, cursor = 1, 0
+local size, cursor = 0, 0
 
 -- Override print
 local _print = print
@@ -113,8 +113,8 @@ local function draw()
   if focused then
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
-    caret = (juno.time.getTime() % .6 < .3) and "|" or ""
-    w = math.max(w, font:getWidth(inputbuf .. "|" .. enputbuf))
+    caret = (juno.time.getTime() % .6 < .3) and "_" or ""
+    w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
@@ -171,13 +171,13 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
-      size = math.max(1, #outputbuf - 1)
+      size = math.max(0, #outputbuf - 1)
       cursor = math.max(0, cursor - 1)
       outputbuf = outputbuf:sub(1, size)
     elseif e.key == "tab" then
       size = #outputbuf + 2
       cursor = cursor + 2
-      inputbuf = inputbuf .. "  "
+      outputbuf = outputbuf .. "  "
     elseif e.key == "right" then
       cursor = cursor + 1
     elseif e.key == "left" then
@@ -191,7 +191,7 @@ function juno.debug._onEvent(e)
       end
       outputbuf = ""
       inputbuf, enputbuf = "", ""
-      size, cursor = 1, 0
+      size, cursor = 0, 0
     elseif e.char then
       outputbuf = outputbuf .. e.char
       size = size + 1
