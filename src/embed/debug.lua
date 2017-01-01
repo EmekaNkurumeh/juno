@@ -210,6 +210,7 @@ function juno.debug._onEvent(e)
       outputbuf = ""
       inputbuf, enputbuf = "", ""
       size, cursor = 0, 0
+      vursor = vursor + 1
     elseif e.char then
       local _,temp = outputbuf:slice(cursor)
       cursor = cursor + 1 
