@@ -14,6 +14,8 @@ local enabled = false
 local focused = false
 local indicators = {}
 local lines = {}
+local history = {}
+local hlines = 1
 local inputbuf = ""
 local enputbuf = ""
 local outputbuf = ""
@@ -187,6 +189,11 @@ function juno.debug._onEvent(e)
       cursor = cursor + 1
     elseif e.key == "left" then
       cursor = math.max(0, cursor - 1)
+    elseif e.key == "up" then
+      outputbuf = table.remove(history)
+      cursor = 0
+      size = #outputbuf
+    elseif e.key == "down" then
     elseif e.key == "return" then
       local fn, err = loadstring(outputbuf, "=input")
       if fn then
@@ -194,6 +201,7 @@ function juno.debug._onEvent(e)
       else
         onError(err)
       end
+      table.insert(history,outputbuf)
       outputbuf = ""
       inputbuf, enputbuf = "", ""
       size, cursor = 0, 0
