@@ -37,3 +37,9 @@ make_array = (data) ->
       i[1] += #x
     return x
   '{'.. ""\join(map(fn,totable data))\rstrip(',') ..'}'
+
+safename = (filename) ->
+  basename = (str) ->
+  	name = str\gsub('(.*/)(.*)', '%2')
+  	name
+  string.gsub basename(filename)\lower!,'[^a-z0-9]','_'
