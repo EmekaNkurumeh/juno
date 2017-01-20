@@ -1,13 +1,13 @@
 cembed = {}
 
-map = (fn, a, ...) ->
+cembed.map = (fn, a, ...) ->
    t = {}
    for _ in *a
      _i = _index_0
      t[_i] = fn(_,...)
    return t
 
-totable = (str) ->
+cembed.totable = (str) ->
   tab = {}
   str\gsub '.',(c) -> table.insert tab,c
   tab
@@ -24,8 +24,8 @@ string.rstrip = (del='') =>
 string.join = (arr) =>
   ret = ''
   for str in *arr do
-    ret ..= str
-  @ .. ret
+    ret ..= @ .. str
+  ret
 
 cembed.fmt = (fmt,dic) ->
   for k,v in pairs dic
@@ -42,26 +42,35 @@ cembed.make_array = (data) ->
     else
       i[1] += #x
     return x
-  '{'.. ""\join(map(fn,totable data))\rstrip(',') ..'}'
+  '{'.. ""\join(cembed.map(fn,cembed.totable data))\rstrip(',') ..'}'
 
 cembed.safename = (filename) ->
-  string.gsub basename(filename)\lower!, '[^a-z0-9]', '_'
+  string.gsub cembed.basename(filename)\lower!, '[^a-z0-9]', '_'
 
-cembed.process = (...) ->
+cembed.process = (names) ->
   filenames = {}
   strings = {}
-  for name in *{...}
+  for name in *names
     if type(name) == "string" then filenames[#filenames + 1] = name
   for filename in *filenames
     data = io.open(filename, 'rb')\read '*a'
     table.insert strings,
-      fmt '/* {filename} */\n' ..
+      cembed.fmt '/* {filename} */\n' ..
           'static const char {name}[] = \n{array};',
           {
-            'filename': basename(filename),
-            'name': safename(filename),
-            'array': make_array(data),
+            'filename': cembed.basename(filename),
+            'name': cembed.safename(filename),
+            'array': cembed.make_array(data),
           }
-  '/* Automatically generated; do not edit */\n\n'\join strings
+  '/* Automatically generated; do not edit */' .. '\n\n'\join strings
 
-cembed  
+main = () ->
+  if #arg < 2
+    print "usage: embed FILENAMES"
+    os.exit 1
+
+  print cembed.process arg
+
+main! if arg[0] == debug.getinfo(1,'S').source\sub(2)
+
+cembed
