@@ -10,6 +10,10 @@ totable = (str) ->
   str\gsub '.',(c) -> table.insert tab,c
   tab
 
+basename = (str) ->
+  name = str\gsub '(.*/)(.*)', '%2'
+  name
+
 string.rstrip = (del='') =>
   n = #@
   while n > 0 and @\find('^%s', n) do n = n - 1
@@ -39,7 +43,21 @@ make_array = (data) ->
   '{'.. ""\join(map(fn,totable data))\rstrip(',') ..'}'
 
 safename = (filename) ->
-  basename = (str) ->
-  	name = str\gsub('(.*/)(.*)', '%2')
-  	name
-  string.gsub basename(filename)\lower!,'[^a-z0-9]','_'
+  string.gsub basename(filename)\lower!, '[^a-z0-9]', '_'
+
+process = (...) ->
+  filenames = {}
+  strings = {}
+  for name in *{...}
+    if type(name) == "string" then filenames[#filenames + 1] = name
+  for filename in *filenames
+    data = io.open(filename, 'rb')\read '*a'
+    table.insert strings,
+      fmt '/* {filename} */\n' ..
+          'static const char {name}[] = \n{array};',
+          {
+            'filename': basename(filename),
+            'name': safename(filename),
+            'array': make_array(data),
+          }
+  '/* Automatically generated; do not edit */\n\n'\join strings
