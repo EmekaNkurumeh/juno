@@ -1,3 +1,5 @@
+cembed = {}
+
 map = (fn, a, ...) ->
    t = {}
    for _ in *a
@@ -10,7 +12,7 @@ totable = (str) ->
   str\gsub '.',(c) -> table.insert tab,c
   tab
 
-basename = (str) ->
+cembed.basename = (str) ->
   name = str\gsub '(.*/)(.*)', '%2'
   name
 
@@ -25,12 +27,12 @@ string.join = (arr) =>
     ret ..= str
   @ .. ret
 
-fmt = (fmt,dic) ->
+cembed.fmt = (fmt,dic) ->
   for k,v in pairs dic
     fmt = fmt\gsub '{'.. k ..'}', tostring v
   return fmt
 
-make_array = (data) ->
+cembed.make_array = (data) ->
   i = {0}
   fn = (x) ->
     x = tostring(string.byte x) .. ','
@@ -42,10 +44,10 @@ make_array = (data) ->
     return x
   '{'.. ""\join(map(fn,totable data))\rstrip(',') ..'}'
 
-safename = (filename) ->
+cembed.safename = (filename) ->
   string.gsub basename(filename)\lower!, '[^a-z0-9]', '_'
 
-process = (...) ->
+cembed.process = (...) ->
   filenames = {}
   strings = {}
   for name in *{...}
@@ -61,3 +63,5 @@ process = (...) ->
             'array': make_array(data),
           }
   '/* Automatically generated; do not edit */\n\n'\join strings
+
+cembed  
