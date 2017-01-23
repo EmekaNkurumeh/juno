@@ -70,8 +70,7 @@ local eventHandlers = {
   keydown = function(e)
     call(juno.debug._onEvent, e)
     call(juno.keyboard._onEvent, e)
-    call(juno.onKeyDown, e.key)
-    call(juno.onTextInput, e.char)
+    call(juno.onKeyDown, e.key, e.char)
     end,
   keyup = function(e)
     call(juno.keyboard._onEvent, e)
