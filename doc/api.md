@@ -170,7 +170,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.graphics.getSize()`
 #### `juno.graphics.drawPixel(x, y, r, g, b, a)`
 #### `juno.graphics.drawPixel(x, y, r, g, b, a)`
-#### `juno.graphics.draw(src, x, y, sub, rot, sx, sy, ox, oy)
+#### `juno.graphics.draw(src, x, y, sub, rot, sx, sy, ox, oy)`
 #### `juno.graphics.drawRect(x, y, w, h, r, g, b, a)`
 #### `juno.graphics.setClip(x, y, w, h)`
 #### `juno.graphics.drawLine(x1, y1, x2, y2, r, g, b, a)`
