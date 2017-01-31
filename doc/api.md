@@ -27,8 +27,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.onUpdate(dt)`
 #### `juno.onDraw()`
 #### `juno.onKeyDown(key)`
-#### `juno.onKeyUp(key)`
-#### `juno.onTextInput(char)`
+#### `juno.onKeyUp(key, char)`
 #### `juno.onMouseMove(x,y)`
 #### `juno.onMouseDown(x, y, button)`
 #### `juno.onMouseUp(x, y, button)`
