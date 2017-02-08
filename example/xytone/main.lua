@@ -1,21 +1,16 @@
+local osc = require "osc"
 
-
-function juno.onLoad()
-  juno.debug.setVisible(true)
-  vis = {}
-  freq = 0
-  gain = 0
-  juno.debug.addIndicator(function()
-    return "freq",freq
-  end)
-  juno.debug.addIndicator(function()
-    return "gain",gain
-  end)
+function set_audio_callback(wave)
   local delay = { idx = 0, max = 44100 * .4 }
   local phase = 0
   local xfreq = 0
   local xgain = 0
-
+  local gen
+  if wave == "wht" or wave == "pnk" then
+    gen = osc[wave](1.5)
+  else
+    gen = osc[wave](math.random(550), 1)
+  end
   juno.audio.master:setCallback(function(t)
     -- Clear visualisation table
     for i in ipairs(vis) do
@@ -30,9 +25,10 @@ function juno.onLoad()
       -- Increment phase
       phase = phase + dt * xfreq
       -- Generate sinewave
-      local out = math.sin(phase * math.pi * 2)
+      -- local out = math.sin(phase * math.pi * 2)
+      local out = gen(phase)
       -- Apply gain
-      out = out * xgain * .5
+      out = out * (xgain * .5) * vol
       -- Process delay
       out = out + (delay[delay.idx] or 0) * .5
       delay[delay.idx] = out
@@ -45,10 +41,48 @@ function juno.onLoad()
   end)
 end
 
+function juno.onLoad()
+  juno.debug.setVisible(true)
+  vis = {}
+  freq = 0
+  gain = 0
+  juno.debug.addIndicator(function()
+    return "freq",freq
+  end)
+  juno.debug.addIndicator(function()
+    return "gain",gain
+  end)
+  set_audio_callback("sin")
+end
+
+function juno.onUpdate(dt)
+  if juno.keyboard.isDown("right") then
+    vol = vol + .1
+  elseif juno.keyboard.isDown("left") then
+    vol = math.max(0, vol - .1)
+  end
+end
 
 function juno.onMouseMove(x, y)
-  gain = math.pow(1 - (y / juno.graphics.getWidth()), 1.8)
+  gain = (math.pow(1 - (y / juno.graphics.getWidth()), 1.8))
   freq = math.pow(x / juno.graphics.getHeight(), 2) * 3000 + 120
+end
+
+function juno.onKeyDown(key)
+  key = tonumber(key)
+  if key == 1 then
+    set_audio_callback("sin")
+  elseif key == 2 then
+    set_audio_callback("tri")
+  elseif key == 3 then
+    set_audio_callback("saw")
+  elseif key == 4 then
+    set_audio_callback("sqr")
+  elseif key == 5 then
+    set_audio_callback("wht")
+  elseif key == 6 then
+    set_audio_callback("pnk")
+  end
 end
 
 

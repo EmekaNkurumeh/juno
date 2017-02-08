@@ -1,3 +1,5 @@
+vol = 1
+
 return {
   title   = "xytone",
   width   = 600,

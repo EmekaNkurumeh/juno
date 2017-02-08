@@ -12,6 +12,7 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 * [juno.time](#junotime)
 * [juno.bufferfx](#junobufferfx)
 * [juno.debug](#junodebug)
+* [juno.keyboard](#junokeyboard)
 
 ## [Objects](#objects-1)
 * [Data](#junodata)
