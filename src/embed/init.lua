@@ -28,7 +28,7 @@ local function call(fn, ...)
   if fn then return fn(...) end
 end
 
-local function merge(...)
+function table.merge(...)
   local res = {}
   for i = 1, select("#", ...) do
     local t = select(i, ...)
@@ -246,7 +246,7 @@ if juno.fs.exists("config.lua") then
   c = call(require, "config")
 end
 
-local config = merge({
+local config = table.merge({
   title       = "Juno " .. juno.getVersion(),
   width       = 500,
   height      = 500,
