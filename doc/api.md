@@ -1,4 +1,5 @@
 https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
+https://github.com/rxi/lovedos/blob/master/doc/api.md
 # Juno API Reference
 
 ## [Callbacks](#callbacks-1)
@@ -27,15 +28,15 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.onLoad()`
 #### `juno.onUpdate(dt)`
 #### `juno.onDraw()`
-#### `juno.onKeyDown(key)`
-#### `juno.onKeyUp(key, char)`
+#### `juno.onKeyDown(key, char)`
+#### `juno.onKeyUp(key)`
 #### `juno.onMouseMove(x,y)`
 #### `juno.onMouseDown(x, y, button)`
 #### `juno.onMouseUp(x, y, button)`
 #### `juno.onQuit()`
 #### `juno.onError(msg, stacktrace)`
 #### `juno.getVersion()`
-#### `juno._pcall(fn, ...)`
+#### `juno._pcall(fn [, ...])`
 #### `juno._argv`
 
 ## juno.Data
@@ -43,59 +44,54 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.Data.fromString(string)`
 #### `Data:getLength()`
 #### `Data:toString()`
-#### `Data:__gc()`
 
 ## juno.Source
 #### `juno.Source.fromBlank()`
 #### `juno.Source.fromData(data)`
-#### `Source:setPan(pan)`
-#### `Source:getLength()`
-#### `Source:pause()`
-#### `Source:getState()`
-#### `Source:setDestination(dest)`
-#### `Source:setRate(rate)`
-#### `Source:stop()`
-#### `Source:setGain(gain)`
-#### `Source:play(reset)`
-#### `Source:setLoop(loop)`
 #### `Source:setCallback(callback)`
-#### `Source:__gc()`
+#### `Source:setDestination([dest])`
+#### `Source:setGain([gain])`
+#### `Source:setPan([pan])`
+#### `Source:setLoop([loop])`
+#### `Source:setRate([rate])`
+#### `Source:getState()`
+#### `Source:getLength()`
+#### `Source:play([reset])`
+#### `Source:pause()`
+#### `Source:stop()`
 
 ## juno.Buffer
 #### `juno.Buffer.fromFile(filename)`
 #### `juno.Buffer.fromString(string)`
 #### `juno.Buffer.fromBlank(w, h)`
-#### `Buffer:clone()`
+#### `Buffer:setPixel(x, y, r, g, b, a)`
+#### `Buffer:setAlpha(alpha)`
+#### `Buffer:setClip(x, y, w, h)`
+#### `Buffer:setBlend(mode)`
+#### `Buffer:setColor(r, g, b, a)`
 #### `Buffer:getWidth()`
 #### `Buffer:getHeight()`
 #### `Buffer:getSize()`
-#### `Buffer:setAlpha(alpha)`
-#### `Buffer:setBlend(mode)`
-#### `Buffer:setColor(r,g,b,a)`
-#### `Buffer:setClip(x, y, w, h)`
-#### `Buffer:reset()`
-#### `Buffer:clear(r,g,b,a)`
 #### `Buffer:getPixel(x, y)`
-#### `Buffer:setPixel(x, y, r, g, b, a)`
-#### `Buffer:copyPixels(src, x, y, sub, sx, sy)`
-#### `Buffer:noise(seed, low, high, grey)`
-#### `Buffer:floodFill(x, y, r, g, b, a)`
-#### `Buffer:drawPixel(x, y, r, g, b, a)`
-#### `Buffer:drawLine(x1, y1, x2, y2, r, g, b, a)`
-#### `Buffer:drawRect(x, y, w, h, r, g, b, a)`
-#### `Buffer:drawBox(x, y, w, h, r, g, b, a)`
-#### `Buffer:drawCircle(x, y, radius, r, b, g, a)`
-#### `Buffer:drawRing(x, y, radius, r, b, g, a)`
-#### `Buffer:drawBuffer(src, x, y, sub, rot, sx, sy, ox, oy)`
-#### `Buffer:draw(src, x, y, sub, rot, sx, sy, ox, oy)`
-#### `Buffer:drawText(font, text, x, y, width)`
-#### `Buffer:__gc()`
+#### `Buffer:floodFill(x, y [, r, g, b, a])`
+#### `Buffer:drawPixel(x, y [, r, g, b, a])`
+#### `Buffer:drawLine(x1, y1, x2, y2 [, r, g, b, a])`
+#### `Buffer:drawRect(x, y, w, h [, r, g, b, a])`
+#### `Buffer:drawBox(x, y, w, h [, r, g, b, a])`
+#### `Buffer:drawCircle(x, y, radius [, r, b, g, a])`
+#### `Buffer:drawRing(x, y, radius [, r, b, g, a])`
+#### `Buffer:drawText([font,] text, x, y [, width])`
+#### `Buffer:drawBuffer(src, x, y [, sub, rot, sx, sy, ox, oy])`
+#### `Buffer:draw(src, x, y [, sub, rot, sx, sy, ox, oy])`
+#### `Buffer:copyPixels(src, x, y [, sub, sx, sy])`
+#### `Buffer:noise([seed, low, high, grey])`
+#### `Buffer:clone()`
+#### `Buffer:reset()`
 
 ## juno.Gif
 #### `juno.Gif.new(w, h, ncolors)`
 #### `Gif:update(buf, delay)`
 #### `Gif:close()`
-#### `Gif:__gc()`
 
 ## juno.Font
 #### `juno.Font.fromFile(filename, size)`
@@ -104,7 +100,6 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `Font:render(string)`
 #### `Font:getWidth()`
 #### `Font:getHeight()`
-#### `Font:__gc()`
 
 ## juno.mouse
 #### `juno.mouse.isDown(key)`
@@ -175,7 +170,6 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `juno.graphics.setClip(x, y, w, h)`
 #### `juno.graphics.drawLine(x1, y1, x2, y2, r, g, b, a)`
 #### `juno.graphics.drawText(font, text, x, y, width)`
-#### `juno.graphics.__gc()`
 
 ## juno.bufferfx
 #### `juno.bufferfx.desaturate(self, amount)`
@@ -203,9 +197,10 @@ https://raw.githubusercontent.com/rxi/lovedos/master/doc/api.md
 #### `config.title`
 #### `config.width`
 #### `config.height`
-#### `config.max_fps`
+#### `config.maxfps`
 #### `config.samplerate`
 #### `config.buffersize`
 #### `config.fullscreen`
 #### `config.resizable`
 #### `config.borderless`
+#### `config.identity`
