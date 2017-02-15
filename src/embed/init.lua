@@ -9,26 +9,11 @@
 -- Functions missing from standard library
 -------------------------------------------------------------------------------
 
-function math.clamp(x, min, max)
-  return x < min and min or (x > max and max or x)
-end
-
-function string:split(sep)
-  local sep, fields = sep or ":", {}
-  local pattern = string.format("([^%s]+)", sep)
-  self:gsub(pattern, function(c) fields[#fields+1] = c end)
-  return fields
-end
-
-function string:slice(pos)
-  return self:sub(1,pos), self:sub(pos+1)
-end
-
 local function call(fn, ...)
   if fn then return fn(...) end
 end
 
-function table.merge(...)
+local function merge(...)
   local res = {}
   for i = 1, select("#", ...) do
     local t = select(i, ...)
@@ -246,7 +231,7 @@ if juno.fs.exists("config.lua") then
   c = call(require, "config")
 end
 
-local config = table.merge({
+local config = merge({
   title       = "Juno " .. juno.getVersion(),
   width       = 500,
   height      = 500,
