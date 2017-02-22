@@ -98,6 +98,10 @@ local function newIndicator(fn, min, max)
   end
 end
 
+local function slice(str, pos)
+  return str:sub(1, pos), str:sub(pos + 1)
+end
+
 
 local function draw()
   -- Not enabled? Don't draw
@@ -173,12 +177,14 @@ function juno.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
+      local _, temp = slice(outputbuf, cursor)
       size = math.max(0, #outputbuf - 1)
       cursor = math.max(0, cursor - 1)
-      outputbuf = outputbuf:sub(1, size)
+      outputbuf = _:sub(1, #_ - 1) .. temp
+      size = #outputbuf
       history[1] = outputbuf
     elseif e.key == "tab" then
-      local _,temp = outputbuf:slice(cursor)
+      local _, temp = slice(outputbuf, cursor)
       cursor = cursor + 2
       outputbuf = _ .. "  " .. temp
       size = #outputbuf
@@ -188,7 +194,7 @@ function juno.debug._onEvent(e)
     elseif e.key == "end" then
       cursor = size
     elseif e.key == "right" then
-      cursor = cursor + 1
+      cursor = math.min(#outputbuf, cursor + 1)
     elseif e.key == "left" then
       cursor = math.max(0, cursor - 1)
     elseif e.key == "up" then
@@ -214,13 +220,13 @@ function juno.debug._onEvent(e)
       size, cursor = 0, 0
       history[1] = ""
     elseif e.char then
-      local _,temp = outputbuf:slice(cursor)
+      local _, temp = slice(outputbuf, cursor)
       cursor = cursor + 1
       outputbuf = _ .. e.char .. temp
       size = #outputbuf
       history[1] = outputbuf
     end
-    inputbuf,enputbuf = outputbuf:slice(cursor)
+    inputbuf, enputbuf = slice(outputbuf, cursor)
   end
 end
 
