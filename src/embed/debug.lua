@@ -119,7 +119,7 @@ local function draw()
   if focused then
     local h = font:getHeight()
     local y = juno.graphics.getHeight() - 8 - h
-    caret = (juno.time.getTime() % .6 < .3) and "_" or " "
+    local caret = (juno.time.getTime() % .6 < .3) and "_" or " "
     w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
     juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
