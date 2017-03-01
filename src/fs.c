@@ -534,7 +534,7 @@ typedef unsigned int uint;
 
 static void error(const char *fmt, ...) {
   va_list argp;
-  printf("Package error: ");
+  printf("package error: ");
   va_start(argp, fmt);
   vprintf(fmt, argp);
   va_end(argp);
@@ -542,37 +542,19 @@ static void error(const char *fmt, ...) {
   exit(EXIT_FAILURE);
 }
 
-static void _concat(char *dst, int dstsz, ...) {
-  const char *s;
-  va_list argp;
-  int i = 0;
-  va_start(argp, dstsz);
-  while ( (s = va_arg(argp, const char*)) ) {
-    while (*s) {
-      dst[i++] = *s++;
-      if (i == dstsz) {
-        error("string length exceeds destination buffer");
-      }
-    }
-  }
-  dst[i] = '\0';
-  va_end(argp);
-}
-
-static
-void concat_path(char *dst, int dstsz, const char *dir, const char *filename) {
+char * concat_path(const char *dir, const char *filename) {
   int dirlen = strlen(dir);
   if ( dir[dirlen - 1] == '/' || *dir == '\0' ) {
-    _concat(dst, dstsz, dir, filename, NULL);
+    return concat(dir, filename, NULL);
   } else {
-    _concat(dst, dstsz, dir, "/", filename, NULL);
+    return concat(dir, "/", filename, NULL);
   }
 }
 
 static void write_file(const char *zip, const char *inname, const char *outname) {
   FILE *fp = fopen(inname, "rb");
-  // char data[(8192 * 1022)];
   char *data;
+
   if (!fp) {
     error("couldn't open input file '%s'", inname);
   }
@@ -583,60 +565,49 @@ static void write_file(const char *zip, const char *inname, const char *outname)
   fseek(fp, 0, SEEK_SET);
 
   /* Get file data*/
-  data = (char *)malloc(sizeof(char *) * size);
-  fread(data, size + 1, 1, fp);
+  data = (char *)malloc(sizeof(char *) * size + 1);
+  int sz = fread(data, sizeof(char), size, fp);
 
   /* Write the file*/
-  mz_zip_add_mem_to_archive_file_in_place(zip, outname, data, strlen(data) + 1, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
-  /* Close file and return ok */
+  data[sz] = '\0';
+  mz_zip_add_mem_to_archive_file_in_place(zip, outname, data, sz, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+
+  /* Close file, free data buffer, and return ok */
   fclose(fp);
+  free(data);
 }
 
 static void write_dir(const char *zip, const char *indir, const char *outdir) {
-  char inbuf[256];
-  char outbuf[256];
-  struct dirent *ep;
+  char *inbuf = "";
+  char *outbuf = "";
+
+  /* Mount file directory */
   fs_mount(indir);
-  DIR *dir = opendir(indir);
-  if (fs_isDir(indir)) {
-    error("couldn't open input dir '%s'", indir);
-  }
 
   /* Write files */
-  // fs_FileListNode *list = fs_listDir(".");
-  // int i = 1;
+  fs_FileListNode *list = fs_listDir(".");
+  int i = 1;
+  fs_FileListNode *n = list;
 
-  while ( (ep = readdir(dir)) ) {
-    /* Skip `.` and `..` */
-    if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, "..")) {
-      continue;
-    }
+  while (n) {
     /* Get full input name and full output name */
-    concat_path(inbuf, sizeof(inbuf), indir, ep->d_name);
-    concat_path(outbuf, sizeof(outbuf), outdir, ep->d_name);
-    /* Write */
-    DIR *d = opendir(inbuf);
-    if (d) {
-      closedir(d);
+    inbuf = concat_path(indir, n->name);
+    outbuf = concat_path(outdir, n->name);
+
+    /* Loop through directories write files and create folders */
+    if (fs_isDir(n->name)) {
+      fs_unmount(indir);
       write_dir(zip, inbuf, outbuf);
     } else {
       write_file(zip, inbuf, outbuf);
     }
-  }
-
-  closedir(dir);
-}
-
-void list_files(char *path, char **dirs) {
-  fs_FileListNode *list = fs_listDir(path);
-  int i = 1;
-  fs_FileListNode *n = list;
-  while (n) {
-    puts(n->name);
     i++;
     n = n->next;
   }
   fs_freeFileList(list);
+  fs_unmount(indir);
+  free(inbuf);
+  free(outbuf);
 }
 
 void package_make(const char *indir, const char *outfile, int type) {
@@ -652,10 +623,11 @@ void package_make(const char *indir, const char *outfile, int type) {
   //   }
   //   fclose(exefp);
   // }
-  remove(outfile);
-  // fs_mount(indir);
 
-  /* Write package data to file and finalize tar */
+  /* Remove old files */
+  remove(outfile);
+
+  /* Write package data */
   write_dir(outfile, indir, indir);
 }
 
