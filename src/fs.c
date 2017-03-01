@@ -518,3 +518,171 @@ int fs_makeDirs(const char *path) {
   free(name);
   return res;
 }
+
+/* Packaging functions*/
+
+#define fseeko fseek
+#define ftello ftell
+#define fseeko64 fseek
+#define ftello64 ftell
+#define fopen64 fopen
+#define freopen64 freopen
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+typedef unsigned int uint;
+#define mzip_t mz_zip_archive
+
+static void error(const char *fmt, ...) {
+  va_list argp;
+  printf("Package error: ");
+  va_start(argp, fmt);
+  vprintf(fmt, argp);
+  va_end(argp);
+  printf("\n");
+  exit(EXIT_FAILURE);
+}
+
+static void _concat(char *dst, int dstsz, ...) {
+  const char *s;
+  va_list argp;
+  int i = 0;
+  va_start(argp, dstsz);
+  while ( (s = va_arg(argp, const char*)) ) {
+    while (*s) {
+      dst[i++] = *s++;
+      if (i == dstsz) {
+        error("string length exceeds destination buffer");
+      }
+    }
+  }
+  dst[i] = '\0';
+  va_end(argp);
+}
+
+static
+void concat_path(char *dst, int dstsz, const char *dir, const char *filename) {
+  int dirlen = strlen(dir);
+  if ( dir[dirlen - 1] == '/' || *dir == '\0' ) {
+    _concat(dst, dstsz, dir, filename, NULL);
+  } else {
+    _concat(dst, dstsz, dir, "/", filename, NULL);
+  }
+}
+
+static void write_file(const char *zip, const char *inname, const char *outname) {
+  FILE *fp = fopen(inname, "rb");
+  // char data[(8192 * 1022)];
+  char *data;
+  if (!fp) {
+    error("couldn't open input file '%s'", inname);
+  }
+
+  /* Get size */
+  fseek(fp, 0, SEEK_END);
+  int size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  /* Get file data*/
+  data = (char *)malloc(sizeof(char *) * size);
+  fread(data, size + 1, 1, fp);
+
+  /* Write the file*/
+  mz_zip_add_mem_to_archive_file_in_place(zip, outname, data, strlen(data) + 1, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+  /* Close file and return ok */
+  fclose(fp);
+}
+
+static void write_dir(const char *zip, const char *indir, const char *outdir) {
+  char inbuf[256];
+  char outbuf[256];
+  struct dirent *ep;
+  fs_mount(indir);
+  DIR *dir = opendir(indir);
+  if (fs_isDir(indir)) {
+    error("couldn't open input dir '%s'", indir);
+  }
+
+  /* Write files */
+  // fs_FileListNode *list = fs_listDir(".");
+  // int i = 1;
+
+  while ( (ep = readdir(dir)) ) {
+    /* Skip `.` and `..` */
+    if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, "..")) {
+      continue;
+    }
+    /* Get full input name and full output name */
+    concat_path(inbuf, sizeof(inbuf), indir, ep->d_name);
+    concat_path(outbuf, sizeof(outbuf), outdir, ep->d_name);
+    /* Write */
+    DIR *d = opendir(inbuf);
+    if (d) {
+      closedir(d);
+      write_dir(zip, inbuf, outbuf);
+    } else {
+      write_file(zip, inbuf, outbuf);
+    }
+  }
+
+  closedir(dir);
+}
+
+void list_files(char *path, char **dirs) {
+  fs_FileListNode *list = fs_listDir(path);
+  int i = 1;
+  fs_FileListNode *n = list;
+  while (n) {
+    puts(n->name);
+    i++;
+    n = n->next;
+  }
+  fs_freeFileList(list);
+}
+
+void package_make(const char *indir, const char *outfile, int type) {
+  // /* Copy .exe to file if exe type is set */
+  // if (type == PACKAGE_TEXE) {
+  //   FILE *exefp = fopen(exefile, "rb");
+  //   if (!exefp) {
+  //     error("couldn't open .exe file");
+  //   }
+  //   int chr;
+  //   while ( (chr = fgetc(exefp)) != EOF ) {
+  //     fputc(chr, fp);
+  //   }
+  //   fclose(exefp);
+  // }
+  remove(outfile);
+  // fs_mount(indir);
+
+  /* Write package data to file and finalize tar */
+  write_dir(outfile, indir, indir);
+}
+
+
+int package_run(int argc, char **argv) {
+  /* Check for `--pack` argument; return failure if it isn't present */
+  if (argc < 2) {
+    return PACKAGE_EFAILURE;
+  }
+  if ( strcmp(argv[1], "--pack") != 0) {
+    return PACKAGE_EFAILURE;
+  }
+
+  /* Check arguments */
+  if (argc < 4) {
+    error("expected arguments: %s dirname outfile", argv[1]);
+  }
+
+  /* Set package type based on file extension */
+  int type = PACKAGE_TZIP;
+  if ( strstr(argv[3], ".exe")) {
+    type = PACKAGE_TEXE;
+  } else if ( strstr(argv[3], ".app")) {
+    type = PACKAGE_TAPP;
+  }
+
+  /* Make package and return success*/
+  package_make(argv[2], argv[3], type);
+  return PACKAGE_ESUCCESS;
+}

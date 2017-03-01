@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -12,6 +12,7 @@
 #include <SDL/SDL.h>
 #include "util.h"
 #include "luax.h"
+#include "fs.h"
 #include "m_source.h"
 
 
@@ -30,6 +31,11 @@ static void shutdown(void) {
 int luaopen_juno(lua_State *L);
 
 int main(int argc, char **argv) {
+
+  /* Handle package command */
+  if ( package_run(argc, argv) == PACKAGE_ESUCCESS ) {
+    exit(EXIT_SUCCESS);
+  }
 
   atexit(shutdown);
 

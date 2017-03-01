@@ -4,3 +4,4 @@ bin/
 *.tmp
 *.pyc
 .DS_Store
+test
