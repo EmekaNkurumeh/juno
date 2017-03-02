@@ -29,17 +29,6 @@ enum {
   FS_ENOTEXIST    = -11,
 };
 
-enum {
-  PACKAGE_TZIP,
-  PACKAGE_TAPP,
-  PACKAGE_TEXE
-};
-
-enum {
-  PACKAGE_ESUCCESS =  0,
-  PACKAGE_EFAILURE = -1,
-};
-
 const char *fs_errorStr(int err);
 void fs_deinit(void);
 int fs_mount(const char *path);
@@ -56,7 +45,5 @@ int fs_write(const char *filename, const void *data, int size);
 int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
 int fs_makeDirs(const char *path);
-
-int package_run(int argc, char **argv);
 
 #endif

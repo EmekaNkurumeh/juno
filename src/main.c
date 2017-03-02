@@ -12,7 +12,7 @@
 #include <SDL/SDL.h>
 #include "util.h"
 #include "luax.h"
-#include "fs.h"
+#include "package.h"
 #include "m_source.h"
 
 
@@ -32,8 +32,9 @@ int luaopen_juno(lua_State *L);
 
 int main(int argc, char **argv) {
 
-  /* Handle package command */
+  /* Handle pack command */
   if ( package_run(argc, argv) == PACKAGE_ESUCCESS ) {
+    puts("done");
     exit(EXIT_SUCCESS);
   }
 

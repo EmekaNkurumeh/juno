@@ -57,7 +57,7 @@ src/lib/jo_gif.c
 . Public domain
 . http://www.jonolick.com/home/gif-writer
 
-src/lib/miniz.c
+src/lib/miniz/*
 . A lossless, high performance data compression library
 . Public domain
 . https://code.google.com/p/miniz/
