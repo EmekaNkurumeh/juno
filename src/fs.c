@@ -662,6 +662,10 @@ int package_run(int argc, char **argv) {
     error("expected arguments: %s dirname outfile", argv[1]);
   }
 
+  if (!isDir(argv[2])) {
+    exit(PACKAGE_EFAILURE);
+  }
+
   /* Set package type based on file extension */
   int type = PACKAGE_TZIP;
   if ( strstr(argv[3], ".exe")) {
@@ -676,6 +680,6 @@ int package_run(int argc, char **argv) {
   /* Make package and return success*/
   makeDirs(argv[3]);
   write_exe(argv[0], concat_path(argv[3], basename(argv[0])));
-  write_dir(concat_path(argv[3], "pak0"), argv[2], ".");
+  write_dir(concat_path(argv[3], "pak0"), argv[2], "");
   return PACKAGE_ESUCCESS;
 }
