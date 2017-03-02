@@ -57,7 +57,6 @@ int fs_append(const char *filename, const void *data, int size);
 int fs_delete(const char *filename);
 int fs_makeDirs(const char *path);
 
-void package_make(const char *indir, const char *outfile, int type);
 int package_run(int argc, char **argv);
 
 #endif

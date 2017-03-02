@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -527,10 +528,10 @@ int fs_makeDirs(const char *path) {
 #define ftello64 ftell
 #define fopen64 fopen
 #define freopen64 freopen
+
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint;
-#define mzip_t mz_zip_archive
 
 static void error(const char *fmt, ...) {
   va_list argp;
@@ -552,6 +553,7 @@ char * concat_path(const char *dir, const char *filename) {
 }
 
 static void write_file(const char *zip, const char *inname, const char *outname) {
+
   FILE *fp = fopen(inname, "rb");
   char *data;
 
@@ -564,17 +566,53 @@ static void write_file(const char *zip, const char *inname, const char *outname)
   int size = ftell(fp);
   fseek(fp, 0, SEEK_SET);
 
-  /* Get file data*/
+  /* Get file data */
   data = (char *)malloc(sizeof(char *) * size + 1);
   int sz = fread(data, sizeof(char), size, fp);
 
-  /* Write the file*/
+  /* Write the file */
   data[sz] = '\0';
   mz_zip_add_mem_to_archive_file_in_place(zip, outname, data, sz, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
 
   /* Close file, free data buffer, and return ok */
   fclose(fp);
   free(data);
+}
+
+static void write_exe(const char *inname, const char *outname) {
+  FILE *rp = fopen(inname, "rb");
+  FILE *wp = fopen(outname, "wb");
+  char *data;
+
+  /* Make sure we opened output and input */
+  if (!rp) {
+    error("couldn't open input file '%s'", inname);
+  }
+
+  if (!wp) {
+    error("couldn't open output file '%s'", outname);
+  }
+
+  /* Get size */
+  fseek(rp, 0, SEEK_END);
+  int size = ftell(rp);
+  fseek(rp, 0, SEEK_SET);
+
+  /* Get file data */
+  data = (char *)malloc(sizeof(char *) * size + 1);
+  int sz = fread(data, sizeof(char), size, rp);
+  data[sz] = '\0';
+
+  /* Write file data */
+  fwrite(data, sizeof(char), size, wp);
+
+  /* Close file, free data buffer, and return ok */
+  fclose(rp);
+  fclose(wp);
+  free(data);
+
+  /* Set file permissions so the file can be executed */
+  chmod (outname, strtol("777", 0, 8));
 }
 
 static void write_dir(const char *zip, const char *indir, const char *outdir) {
@@ -610,28 +648,6 @@ static void write_dir(const char *zip, const char *indir, const char *outdir) {
   free(outbuf);
 }
 
-void package_make(const char *indir, const char *outfile, int type) {
-  // /* Copy .exe to file if exe type is set */
-  // if (type == PACKAGE_TEXE) {
-  //   FILE *exefp = fopen(exefile, "rb");
-  //   if (!exefp) {
-  //     error("couldn't open .exe file");
-  //   }
-  //   int chr;
-  //   while ( (chr = fgetc(exefp)) != EOF ) {
-  //     fputc(chr, fp);
-  //   }
-  //   fclose(exefp);
-  // }
-
-  /* Remove old files */
-  remove(outfile);
-
-  /* Write package data */
-  write_dir(outfile, indir, indir);
-}
-
-
 int package_run(int argc, char **argv) {
   /* Check for `--pack` argument; return failure if it isn't present */
   if (argc < 2) {
@@ -654,7 +670,12 @@ int package_run(int argc, char **argv) {
     type = PACKAGE_TAPP;
   }
 
+  /* Remove old files */
+  remove(argv[3]);
+
   /* Make package and return success*/
-  package_make(argv[2], argv[3], type);
+  makeDirs(argv[3]);
+  write_exe(argv[0], concat_path(argv[3], basename(argv[0])));
+  write_dir(concat_path(argv[3], "pak0"), argv[2], ".");
   return PACKAGE_ESUCCESS;
 }
