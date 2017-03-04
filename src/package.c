@@ -120,26 +120,31 @@ char * concat_path(const char *dir, const char *filename) {
   }
 }
 
-static void write_data(char *data, const char *outname) {
-  FILE *wp = fopen(outname, "wb");
+static void package_write_data(char *data, const char *output) {
+
+  /* Open the output file for writing */
+  FILE *wp = fopen(output, "wb");
 
   if (!wp) {
-    error("couldn't open output file '%s'", outname);
+    error("couldn't open output file '%s'", output);
   }
 
   /* Write file data */
   fwrite(data, sizeof(char), strlen(data) + 1, wp);
 
-  /* Close file, free data buffer, and return ok */
+  /* Close file */
   fclose(wp);
+  free(wp);
 }
 
-static void write_file(const char *inname, const char *outname) {
-  FILE *rp = fopen(inname, "rb");
+static void package_write_file(const char *input, const char *output) {
+
+  /* Open the output file for reading */
+  FILE *rp = fopen(input, "rb");
   char *data;
 
   if (!rp) {
-    error("couldn't open input file '%s'", inname);
+    error("couldn't open input file '%s'", input);
   }
 
   /* Get size */
@@ -153,19 +158,20 @@ static void write_file(const char *inname, const char *outname) {
   data[sz] = '\0';
 
   /* Write file data */
-  write_data(data, outname);
+  package_write_data(data, output);
 
-  /* Close file, free data buffer, and return ok */
+  /* Close file, free data buffer and file pointer, and return ok */
   fclose(rp);
   free(data);
+  free(rp);
 }
 
-static void write_file_zip(const char *zip, const char *inname, const char *outname) {
-  FILE *fp = fopen(inname, "rb");
+static void package_write_zip(const char *zip, const char *input, const char *output) {
+  FILE *fp = fopen(input, "rb");
   char *data;
 
   if (!fp) {
-    error("couldn't open input file '%s'", inname);
+    error("couldn't open input file '%s'", input);
   }
 
   /* Get size */
@@ -179,14 +185,15 @@ static void write_file_zip(const char *zip, const char *inname, const char *outn
 
   /* Write the file */
   data[sz] = '\0';
-  mz_zip_add_mem_to_archive_file_in_place(zip, outname, data, sz, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
+  mz_zip_add_mem_to_archive_file_in_place(zip, output, data, sz, "no comment", (uint16)strlen("no comment"), MZ_BEST_COMPRESSION);
 
   /* Close file, free data buffer, and return ok */
   fclose(fp);
   free(data);
+  free(fp);
 }
 
-static void write_dir(const char *zip, const char *indir, const char *outdir) {
+static void package_write_dir(const char *zip, const char *indir, const char *outdir) {
   char *inbuf = "";
   char *outbuf = "";
 
@@ -208,7 +215,7 @@ static void write_dir(const char *zip, const char *indir, const char *outdir) {
       fs_unmount(indir);
       write_dir(zip, inbuf, outbuf);
     } else {
-      write_file_zip(zip, inbuf, outbuf);
+      package_write_zip(zip, inbuf, outbuf);
     }
     i++;
     n = n->next;
@@ -230,71 +237,20 @@ int package_run(int argc, char **argv) {
 
   /* Check arguments */
   if (argc < 4) {
-    error("expected arguments: %s dirname outfile", argv[1]);
+    error("expected arguments: %s dir out", argv[1]);
   }
 
   if (!isDir(argv[2])) {
     exit(PACKAGE_EFAILURE);
   }
 
-
-  /* Generate write directories */
-  char *exe_dir = "";
-  char *zip_dir = "";
-  char plist[1000];
-
-  switch (type) {
-    case PACKAGE_TEXE:
-    case PACKAGE_TZIP:
-      exe_dir = argv[3];
-      zip_dir = concat_path(argv[3], "pak0");
-
-    break;
-    case PACKAGE_TAPP:
-      exe_dir = concat(argv[3], ".app/Contents/MacOS", NULL);
-      zip_dir = concat_path(concat(argv[3], ".app/Contents/Resources", NULL), "pak0");
-      sprintf(plist, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
-      "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" \
-      "<plist version=\"1.0\"> \n" \
-      "<dict>\n" \
-      "	<key>CFBundleDisplayName</key> \n" \
-      "	<string>%s</string>\n" \
-      "	<key>CFBundleExecutable</key>\n" \
-      "	<string>juno</string>\n" \
-      "	<key>CFBundleIdentifier</key>\n" \
-      "	<string></string>\n" \
-      "	<key>CFBundleName</key>\n" \
-      "	<string>%s</string>\n" \
-      "	<key>CFBundlePackageType</key> \n" \
-      "	<string>APPL</string>\n" \
-      "	<key>CFBundleShortVersionString</key>\n" \
-      "	<string>0.0</string> \n" \
-      "	<key>CFBundleSignature</key> \n" \
-      "	<string>?\??\?</string>\n" \
-      "	<key>CFBundleVersion</key> \n" \
-      "	<string>0.0</string> \n" \
-      "</dict> \n" \
-      "</plist>\n", argv[3], argv[3]);
-    break;
-  }
-
   /* Remove old files */
-  remove(concat(argv[3], ".app", NULL));
-  makeDirs(concat(argv[3], ".app", NULL));
-  makeDirs(concat(argv[3], ".app/Contents", NULL));
-  makeDirs(concat(argv[3], ".app/Contents/Frameworks", NULL));
-  makeDirs(concat(argv[3], ".app/Contents/MacOS", NULL));
-  makeDirs(concat(argv[3], ".app/Contents/Resources", NULL));
-  printf("%d\n", isDir(concat(argv[3], ".app", NULL)));
+  remove(argv[3]);
 
   /* Make package and return success*/
   write_file(argv[0], concat_path(exe_dir, basename(argv[0])));
   chmod(concat_path(exe_dir, basename(argv[0])), strtol("777", 0, 8));
-  write_dir(zip_dir, argv[2], "");
-
-  if (type == PACKAGE_TAPP) {
-    write_data(plist, concat(argv[3], ".app/Contents/Info.plist", NULL));
-  }
+  package_write_dir(zip_dir, argv[2], "");
 
   return PACKAGE_ESUCCESS;
 }
