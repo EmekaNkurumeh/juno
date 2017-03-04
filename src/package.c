@@ -246,13 +246,11 @@ int package_run(int argc, char **argv) {
   switch (type) {
     case PACKAGE_TEXE:
     case PACKAGE_TZIP:
-      puts("creating zip...");
       exe_dir = argv[3];
       zip_dir = concat_path(argv[3], "pak0");
 
     break;
     case PACKAGE_TAPP:
-      puts("creating app...");
       exe_dir = concat(argv[3], ".app/Contents/MacOS", NULL);
       zip_dir = concat_path(concat(argv[3], ".app/Contents/Resources", NULL), "pak0");
       sprintf(plist, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
@@ -281,20 +279,18 @@ int package_run(int argc, char **argv) {
   }
 
   /* Remove old files */
-  remove(argv[3]);
+  remove(concat(argv[3], ".app", NULL));
+  makeDirs(concat(argv[3], ".app", NULL));
+  makeDirs(concat(argv[3], ".app/Contents", NULL));
   makeDirs(concat(argv[3], ".app/Contents/Frameworks", NULL));
   makeDirs(concat(argv[3], ".app/Contents/MacOS", NULL));
   makeDirs(concat(argv[3], ".app/Contents/Resources", NULL));
+  printf("%d\n", isDir(concat(argv[3], ".app", NULL)));
 
   /* Make package and return success*/
   write_file(argv[0], concat_path(exe_dir, basename(argv[0])));
-  puts("copying executable...");
-
   chmod(concat_path(exe_dir, basename(argv[0])), strtol("777", 0, 8));
-  puts("setting write permissions...");
-
   write_dir(zip_dir, argv[2], "");
-  puts("creating archive...");
 
   if (type == PACKAGE_TAPP) {
     write_data(plist, concat(argv[3], ".app/Contents/Info.plist", NULL));

@@ -34,7 +34,6 @@ int main(int argc, char **argv) {
 
   /* Handle pack command */
   if ( package_run(argc, argv) == PACKAGE_ESUCCESS ) {
-    puts("done");
     exit(EXIT_SUCCESS);
   }
 
