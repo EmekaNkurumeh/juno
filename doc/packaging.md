@@ -18,7 +18,7 @@ SDL.dll
 
 ### MacOS
 
-The dynamically linked libraries should also be included when distributing your game. On MacOS these are `libSDL-1.2.0.dylib` and `libluajit-5.1.2.dylib` or `liblua5.1.dylib`. The Juno executable can be renamed to the title of your game. This should result in the following files:
+The dynamically linked libraries should also be included when distributing your game. On MacOS these are `libSDL-1.2.0.dylib` and `libluajit-5.1.2.dylib` or `liblua5.1.dylib`. You need to place these files in the traditional app structure for MacOS. This should result in the following files:
 
 ```
 game_title.exe  (juno executable)
