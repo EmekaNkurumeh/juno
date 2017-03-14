@@ -101,7 +101,7 @@ https://github.com/rxi/lovedos/blob/master/doc/api.md
 ###### `juno.Font.fromString(string, size)`
 ###### `juno.Font.fromEmbedded(size)`
 ###### `Font:render(string)`
-###### `Font:getWidth()`
+###### `Font:getWidth(string)`
 ###### `Font:getHeight()`
 
 ### Modules
