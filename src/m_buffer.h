@@ -16,7 +16,6 @@
 
 typedef struct {
   sr_Buffer *buffer;
-  sr_Pixel _clearColor;
 } Buffer;
 
 Buffer *buffer_new(lua_State *L);

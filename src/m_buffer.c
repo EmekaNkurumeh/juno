@@ -233,23 +233,6 @@ static int l_buffer_setPixel(lua_State *L) {
 }
 
 
-static int l_buffer_getClearColor(lua_State *L) {
-  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
-  lua_pushnumber(L, self->_clearColor.rgba.r * 0.00390625); /* div 256. */
-  lua_pushnumber(L, self->_clearColor.rgba.g * 0.00390625);
-  lua_pushnumber(L, self->_clearColor.rgba.b * 0.00390625);
-  lua_pushnumber(L, self->_clearColor.rgba.a * 0.00390625);
-  return 4;
-}
-
-
-static int l_buffer_setClearColor(lua_State *L) {
-  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
-  self->_clearColor = getColorArgs(L, 2, 0);
-  return 1;
-}
-
-
 static int l_buffer_copyPixels(lua_State *L) {
   sr_Rect sub;
   Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
@@ -398,8 +381,6 @@ int luaopen_buffer(lua_State *L) {
     { "clear",          l_buffer_clear          },
     { "getPixel",       l_buffer_getPixel       },
     { "setPixel",       l_buffer_setPixel       },
-    { "getClearColor",  l_buffer_getClearColor  },
-    { "setClearColor",  l_buffer_setClearColor  },
     { "copyPixels",     l_buffer_copyPixels     },
     { "noise",          l_buffer_noise          },
     { "floodFill",      l_buffer_floodFill      },

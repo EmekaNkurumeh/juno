@@ -3,8 +3,7 @@
 function juno.onLoad(dt)
   math.randomseed(juno.time.getNow())
   juno.debug.setVisible(true)
-  -- G.screen = juno.Buffer.fromBlank(G.width, G.height)
-  G.screen = juno.Buffer.fromBlank(juno.graphics.getSize())
+  G.screen = juno.Buffer.fromBlank(G.width, G.height)
   G.screen:setClearColor(0,0,0,1)
   G.particle = juno.Buffer.fromFile("data/image/particle.png")
   G.particles = {}
@@ -23,9 +22,7 @@ end
 
 
 function juno.onUpdate(dt)
-  print(juno.graphics.getSize())
   if juno.keyboard.wasPressed("escape") then juno.system.quit() end
-  if juno.keyboard.wasPressed("r") then juno.onLoad() end
   if juno.keyboard.wasPressed("`") then juno.debug.setFocused(not juno.debug.getFocused()) end
   for i, p in ipairs(G.particles) do
     p.x = p.x + p.vx * dt

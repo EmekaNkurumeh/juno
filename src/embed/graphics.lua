@@ -38,10 +38,19 @@ juno.graphics.init = function(...)
   return screen
 end
 
+
+function juno.graphics.setClearColor(...)
+  juno.graphics._clearColor = { ... }
+end
+
+function juno.graphics.getClearColor(...)
+  return unpack(juno.graphics._clearColor)
+end
+
+
+
 function juno.graphics._onEvent(e)
   if e.type == "resize" then
-    -- print(e.width, e.height)
-    juno.graphics.resetVideoMode()
-    -- juno.graphics.setSize(e.width, e.height)
+    juno.graphics.setSize(e.width, e.height)
   end
 end

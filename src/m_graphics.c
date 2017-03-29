@@ -54,6 +54,7 @@ static int l_graphics_init(lua_State *L) {
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);
+  const char *icon = luaL_optstring(L, 7, "Juno");
   if (inited) {
     luaL_error(L, "graphics are already inited");
   }
@@ -79,8 +80,24 @@ static int l_graphics_init(lua_State *L) {
 }
 
 
-static int l_graphics_resetVideoMode(lua_State *L) {
-  resetVideoMode(L);
+static int l_graphics_setSize(lua_State *L) {
+  int width = luaL_optnumber(L, 1, screenWidth);
+  int height = luaL_optnumber(L, 2, screenHeight);
+  /* Reset video mode and set new screen size*/
+  int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
+              (resizable  ? SDL_RESIZABLE : 0)  |
+              (borderless ? SDL_NOFRAME : 0);
+  if (SDL_SetVideoMode(width, height, 32, flags) == NULL) {
+    luaL_error(L, "could not set resize screen");
+  }
+  /* Reset screen buffer */
+  if (screen) {
+    sr_Buffer *b = screen->buffer;
+    b->pixels = (void*) SDL_GetVideoSurface()->pixels;
+    b->w = width;
+    b->h = height;
+    sr_setClip(b, sr_rect(0, 0, b->w, b->h));
+  }
   return 0;
 }
 
@@ -109,7 +126,7 @@ static int l_graphics_getMaxFps(lua_State *L) {
 int luaopen_graphics(lua_State *L) {
   luaL_Reg reg[] = {
     { "init",           l_graphics_init           },
-    { "resetVideoMode", l_graphics_resetVideoMode },
+    { "setSize",        l_graphics_setSize        },
     { "setFullscreen",  l_graphics_setFullscreen  },
     { "getFullscreen",  l_graphics_getFullscreen  },
     { "setMaxFps",      l_graphics_setMaxFps      },

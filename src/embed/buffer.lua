@@ -69,9 +69,3 @@ function juno.Buffer:drawText(font, text, x, y, width)
     self:drawBuffer(tex, x, y)
   end
 end
-
-local clear = juno.Buffer.clear
-
-function juno.Buffer:clear(...)
-  return clear(self, self:getClearColor() or ...)
-end

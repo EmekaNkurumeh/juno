@@ -11,5 +11,4 @@ return {
   width   = G.width * G.scale,
   height  = G.height * G.scale,
   borderless = false,
-  resizable = true,
 }
