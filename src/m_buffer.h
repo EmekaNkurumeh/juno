@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -16,6 +16,7 @@
 
 typedef struct {
   sr_Buffer *buffer;
+  sr_Pixel _clearColor;
 } Buffer;
 
 Buffer *buffer_new(lua_State *L);

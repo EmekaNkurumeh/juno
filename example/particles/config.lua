@@ -10,5 +10,6 @@ return {
   title   = "Particles",
   width   = G.width * G.scale,
   height  = G.height * G.scale,
-  borderless = true,
+  borderless = false,
+  resizable = true,
 }

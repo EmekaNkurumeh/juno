@@ -153,6 +153,19 @@ static int l_buffer_getHeight(lua_State *L) {
 }
 
 
+static int l_buffer_setWidth(lua_State *L) {
+  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
+  self->buffer->w = luaL_optnumber(L, 2, self->buffer->w);
+  return 0;
+}
+
+static int l_buffer_setHeight(lua_State *L) {
+  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
+  self->buffer->h = luaL_optnumber(L, 2, self->buffer->h);
+  return 0;
+}
+
+
 static int l_buffer_setAlpha(lua_State *L) {
   Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
   sr_setAlpha(self->buffer, luaL_optnumber(L, 2, 1.) * 0xff);
@@ -230,6 +243,23 @@ static int l_buffer_setPixel(lua_State *L) {
   int y = luaL_checknumber(L, 3);
   sr_setPixel(self->buffer, getColorArgs(L, 4, 0), x, y);
   return 0;
+}
+
+
+static int l_buffer_getClearColor(lua_State *L) {
+  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
+  lua_pushnumber(L, self->_clearColor.rgba.r * 0.00390625); /* div 256. */
+  lua_pushnumber(L, self->_clearColor.rgba.g * 0.00390625);
+  lua_pushnumber(L, self->_clearColor.rgba.b * 0.00390625);
+  lua_pushnumber(L, self->_clearColor.rgba.a * 0.00390625);
+  return 4;
+}
+
+
+static int l_buffer_setClearColor(lua_State *L) {
+  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
+  self->_clearColor = getColorArgs(L, 2, 0);
+  return 1;
 }
 
 
@@ -373,6 +403,8 @@ int luaopen_buffer(lua_State *L) {
     { "clone",          l_buffer_clone          },
     { "getWidth",       l_buffer_getWidth       },
     { "getHeight",      l_buffer_getHeight      },
+    { "setWidth",       l_buffer_setWidth       },
+    { "setHeight",      l_buffer_setHeight      },
     { "setAlpha",       l_buffer_setAlpha       },
     { "setBlend",       l_buffer_setBlend       },
     { "setColor",       l_buffer_setColor       },
@@ -381,6 +413,8 @@ int luaopen_buffer(lua_State *L) {
     { "clear",          l_buffer_clear          },
     { "getPixel",       l_buffer_getPixel       },
     { "setPixel",       l_buffer_setPixel       },
+    { "getClearColor",  l_buffer_getClearColor  },
+    { "setClearColor",  l_buffer_setClearColor  },
     { "copyPixels",     l_buffer_copyPixels     },
     { "noise",          l_buffer_noise          },
     { "floodFill",      l_buffer_floodFill      },

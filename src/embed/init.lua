@@ -73,6 +73,9 @@ local eventHandlers = {
     call(juno.mouse._onEvent, e)
     call(juno.onMouseUp, e.x, e.y, e.button)
     end,
+  resize = function(e)
+    call(juno.graphics._onEvent, e)
+    end,
   quit = function(e)
     call(juno.onQuit)
     os.exit()

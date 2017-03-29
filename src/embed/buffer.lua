@@ -21,8 +21,8 @@ end
 local defaultFont = juno.Font.fromEmbedded()
 
 local fontTexCache = {}
-setmetatable(fontTexCache, { 
-  __index = function(t, k) 
+setmetatable(fontTexCache, {
+  __index = function(t, k)
     fontTexCache[k] = {}
     return fontTexCache[k]
   end,
@@ -68,4 +68,10 @@ function juno.Buffer:drawText(font, text, x, y, width)
     end
     self:drawBuffer(tex, x, y)
   end
+end
+
+local clear = juno.Buffer.clear
+
+function juno.Buffer:clear(...)
+  return clear(self, self:getClearColor() or ...)
 end

@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
   #include "keyboard_lua.h"
   #include "mouse_lua.h"
   #include "debug_lua.h"
+  #include "system_lua.h"
   #include "init_lua.h"
   struct {
     const char *name, *data; int size;
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
     { "keyboard.lua",   keyboard_lua,   sizeof(keyboard_lua)  },
     { "mouse.lua",      mouse_lua,      sizeof(mouse_lua)     },
     { "debug.lua",      debug_lua,      sizeof(debug_lua)     },
+    { "system.lua",     system_lua,     sizeof(system_lua)    },
     { "init.lua",       init_lua,       sizeof(init_lua)      },
     { NULL, NULL, 0 }
   };

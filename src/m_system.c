@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -59,6 +59,17 @@ static int l_system_poll(lua_State *L) {
       //  luax_setfield_number(L, "width", e.resize.w);
       //  luax_setfield_number(L, "height", e.resize.h);
       //  break;
+
+      // /* TODO: */
+      case SDL_VIDEORESIZE:
+      //  lua_getfield(L, -3, "setSize");
+      //  lua_pushnumber(L, e.resize.w);
+      //  lua_pushnumber(L, e.resize.h);
+      //  luax_call(L, 2, 0);
+       luax_setfield_string(L, "type", "resize");
+       luax_setfield_number(L, "width", e.resize.w);
+       luax_setfield_number(L, "height", e.resize.h);
+       break;
 
       case SDL_KEYDOWN: {
         luax_setfield_string(L, "type", "keydown");
@@ -122,9 +133,9 @@ static int l_system_info(lua_State *L) {
   if (!strcmp(str, "os")) {
 #if _WIN32
     lua_pushstring(L, "windows");
-#elif __linux__ 
+#elif __linux__
     lua_pushstring(L, "linux");
-#elif __FreeBSD__ 
+#elif __FreeBSD__
     lua_pushstring(L, "bsd");
 #elif __APPLE__
     lua_pushstring(L, "osx");

@@ -38,9 +38,8 @@ juno.graphics.init = function(...)
   return screen
 end
 
-
-function juno.graphics.setClearColor(...)
-  juno.graphics._clearColor = { ... }
+function juno.graphics._onEvent(e)
+  if e.type == "resize"
+    juno.graphics.setSize(e.width, e.height)
+  end
 end
-
-
