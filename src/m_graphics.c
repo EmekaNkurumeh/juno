@@ -79,6 +79,11 @@ static int l_graphics_init(lua_State *L) {
 }
 
 
+static int l_graphics_resetVideoMode(lua_State *L) {
+  resetVideoMode(L);
+  return 0;
+}
+
 static int l_graphics_setFullscreen(lua_State *L) {
   fullscreen = luax_optboolean(L, 1, 0);
   resetVideoMode(L);
@@ -104,6 +109,7 @@ static int l_graphics_getMaxFps(lua_State *L) {
 int luaopen_graphics(lua_State *L) {
   luaL_Reg reg[] = {
     { "init",           l_graphics_init           },
+    { "resetVideoMode", l_graphics_resetVideoMode },
     { "setFullscreen",  l_graphics_setFullscreen  },
     { "getFullscreen",  l_graphics_getFullscreen  },
     { "setMaxFps",      l_graphics_setMaxFps      },

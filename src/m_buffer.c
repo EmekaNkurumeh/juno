@@ -153,19 +153,6 @@ static int l_buffer_getHeight(lua_State *L) {
 }
 
 
-static int l_buffer_setWidth(lua_State *L) {
-  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
-  self->buffer->w = luaL_optnumber(L, 2, self->buffer->w);
-  return 0;
-}
-
-static int l_buffer_setHeight(lua_State *L) {
-  Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
-  self->buffer->h = luaL_optnumber(L, 2, self->buffer->h);
-  return 0;
-}
-
-
 static int l_buffer_setAlpha(lua_State *L) {
   Buffer *self = luaL_checkudata(L, 1, CLASS_NAME);
   sr_setAlpha(self->buffer, luaL_optnumber(L, 2, 1.) * 0xff);
@@ -403,8 +390,6 @@ int luaopen_buffer(lua_State *L) {
     { "clone",          l_buffer_clone          },
     { "getWidth",       l_buffer_getWidth       },
     { "getHeight",      l_buffer_getHeight      },
-    { "setWidth",       l_buffer_setWidth       },
-    { "setHeight",      l_buffer_setHeight      },
     { "setAlpha",       l_buffer_setAlpha       },
     { "setBlend",       l_buffer_setBlend       },
     { "setColor",       l_buffer_setColor       },

@@ -39,7 +39,9 @@ juno.graphics.init = function(...)
 end
 
 function juno.graphics._onEvent(e)
-  if e.type == "resize"
-    juno.graphics.setSize(e.width, e.height)
+  if e.type == "resize" then
+    -- print(e.width, e.height)
+    juno.graphics.resetVideoMode()
+    -- juno.graphics.setSize(e.width, e.height)
   end
 end
