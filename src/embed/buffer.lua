@@ -17,6 +17,10 @@ function juno.Buffer:getSize()
   return self:getWidth(), self:getHeight()
 end
 
+function juno.Buffer:setSize(width, height)
+  return self:getWidth(width), self:getHeight(height)
+end
+
 
 local defaultFont = juno.Font.fromEmbedded()
 

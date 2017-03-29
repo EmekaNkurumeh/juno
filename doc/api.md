@@ -76,6 +76,9 @@ https://github.com/rxi/lovedos/blob/master/doc/api.md
 ###### `Buffer:getWidth()`
 ###### `Buffer:getHeight()`
 ###### `Buffer:getSize()`
+###### `Buffer:setWidth(width)`
+###### `Buffer:setHeight(height)`
+###### `Buffer:setSize(width, height)`
 ###### `Buffer:getClearColor`
 ###### `Buffer:getPixel(x, y)`
 ###### `Buffer:floodFill(x, y [, r, g, b, a])`
@@ -164,6 +167,9 @@ https://github.com/rxi/lovedos/blob/master/doc/api.md
 ###### `juno.graphics.setClearColor(r, g, b, a)`
 ###### `juno.graphics.getClearColor()`
 ###### `juno.graphics.getHeight()`
+###### `juno.graphics.setWidth(width)`
+###### `juno.graphics.setHeight(height)`
+###### `juno.graphics.setSize(width, height)`
 ###### `juno.graphics.clear(r,g,b,a)`
 ###### `juno.graphics.reset()`
 ###### `juno.graphics.resetVideoMode()`
