@@ -54,7 +54,6 @@ static int l_graphics_init(lua_State *L) {
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);
-  const char *icon = luaL_optstring(L, 7, "Juno");
   if (inited) {
     luaL_error(L, "graphics are already inited");
   }

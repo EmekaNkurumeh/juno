@@ -249,14 +249,6 @@ if not config.identity then
   config.identity = config.title:gsub("[^%w]", ""):lower()
 end
 
-if not config.icon then
-  config.icon = juno.Buffer.fromString("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAP1BMVEUAAAAAAAAAAAD////19fUO"..
-    "Dg7v7+/h4eGzs7MlJSUeHh7n5+fY2NjJycnGxsa3t7eioqKfn5+QkJCHh4d+fn7zU+b5AAAAAnRS"..
-    "TlPlAFWaypEAAABRSURBVBjTfc9HDoAwDERRQ+w0ern/WQkZaUBC4e/mrWzppH9VJjbjZg1Ii2rM"..
-    "DyR1JZ8J0dVWggIGggcEwgbYCRbuPRqgyjHNpzUP+39GPu9fgloC5L9DO0sAAAAASUVORK5CYII=")
-end
-
-
 
 -------------------------------------------------------------------------------
 -- Init filesystem write path
@@ -274,7 +266,7 @@ juno.fs.mount(path)
 -------------------------------------------------------------------------------
 
 juno.graphics.init(config.width, config.height, config.title,
-                   config.fullscreen, config.resizable, config.borderless, config.icon)
+                   config.fullscreen, config.resizable, config.borderless)
 juno.graphics.setMaxFps(config.maxfps)
 juno.graphics.setClearColor(0, 0, 0)
 juno.audio.init(config.samplerate, config.buffersize)
