@@ -316,7 +316,7 @@ else
 
   function juno.onDraw()
     -- Draw particles
-    -- juno.graphics.setBlend("add")
+    juno.graphics.setBlend("add")
     local lastx, lasty
     for _, p in ipairs(particles) do
       local x, y = (p.x * p.z) + w / 2, (p.y * p.z) + w / 2

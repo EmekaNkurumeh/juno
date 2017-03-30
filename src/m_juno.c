@@ -9,7 +9,7 @@
 #include "luax.h"
 #include <SDL/SDL.h>
 
-#define JUNO_VERSION "0.1.0"
+#define JUNO_VERSION "0.3.0"
 
 
 static int l_juno_getVersion(lua_State *L) {
