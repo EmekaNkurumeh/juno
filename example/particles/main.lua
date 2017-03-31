@@ -4,7 +4,6 @@ function juno.onLoad(dt)
   math.randomseed(juno.time.getNow())
   juno.debug.setVisible(true)
   G.screen = juno.Buffer.fromBlank(G.width, G.height)
-  G.screen:setClearColor(0,0,0,1)
   G.particle = juno.Buffer.fromFile("data/image/particle.png")
   G.particles = {}
   for i = 0, 200 do
@@ -46,7 +45,7 @@ end
 
 
 function juno.onDraw()
-  G.screen:clear()
+  G.screen:clear(0,0,0,1)
   G.screen:setBlend("add")
   G.screen:setColor(.2, .4, 1)
   for i, p in ipairs(G.particles) do

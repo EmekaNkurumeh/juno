@@ -69,3 +69,33 @@ function juno.Buffer:drawText(font, text, x, y, width)
     self:drawBuffer(tex, x, y)
   end
 end
+
+
+local sin, cos, pi = math.sin, math.cos, math.pi
+
+function juno.Buffer:polygon(x, y, sides, radius, angle)
+  checkArg(1, x == nil or type(x) == "number", "expected number")
+  checkArg(2, y == nil or type(y) == "number", "expected number")
+  checkArg(3, sides == nil or type(sides) == "number", "expected number")
+  checkArg(4, type(radius or 0) == "number", "expected number")
+
+  local x_coords, y_coords = {}, {}
+  for n = 1, sides do
+    x_coords[n] = radius * cos(2*pi*n/sides + (angle and angle or 0)) + x
+    y_coords[n] = radius * sin(2*pi*n/sides + (angle and angle or 0)) + y
+  end
+
+  x_coords[sides + 1] = x_coords[1]
+  y_coords[sides + 1] = y_coords[1]
+
+  for n = 1, sides + 1 do
+    local x, y = x_coords[n], y_coords[n]
+    local x1, y1 = x_coords[math.max(1, n-1)], y_coords[math.max(1, n-1)]
+    self:drawLine(x, y, x1, y1, 0.5, 0, 1, 1)
+  end
+
+  for n = 1, sides + 1 do
+    local x, y = x_coords[n], y_coords[n]
+    self:drawPixel(x, y, 1, 0, .5, 1)
+  end
+end
