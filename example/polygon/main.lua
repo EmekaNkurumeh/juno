@@ -12,6 +12,7 @@
 ]]
 
 local sin, cos, pi = math.sin, math.cos, math.pi
+local min, max, sqrt = math.min, math.max, math.sqrt
 local rot = 0
 local str_sides = ""
 local num_sides = 1
@@ -21,10 +22,11 @@ local function drawShapes()
   while true do
     local x = G.screen:getWidth() / 2
     local y = G.screen:getHeight() / 2
-    for sides = 3, num_sides do
-      local radius = ((sides^2) * sin(rot) * sides) / sides
+    for sides = 3, ((num_sides > 3) and num_sides or 3) do
+      local radius = ((sides^2) * (sin(rot) * sqrt(2)) * sides) / sides
       local rotation = ((sides % 2 == 0) and rot or -rot)
-      G.screen:polygon(x, y, sides, radius, rotation)
+      local r, g, b = min(1, (sides^2) / 255), min(1, (sides^2) / 255), min(1, (sides^2) / 255)
+      G.screen:drawPolygon(x, y, sides, radius, rotation, r, g, b)
     end
     coroutine.yield()
   end
@@ -61,7 +63,7 @@ end
 
 function juno.onDraw()
   G.screen:clear(0,0,0,1)
-  G.screen:setBlend("add")
+  -- G.screen:setBlend("add")
   drawShapes()
   G.screen:copyPixels(font:render(str_sides), 2, G.width - (font:getHeight() - 2))
   juno.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)

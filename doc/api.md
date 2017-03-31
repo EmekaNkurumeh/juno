@@ -83,7 +83,7 @@ https://github.com/rxi/lovedos/blob/master/doc/api.md
 ###### `Buffer:drawBox(x, y, w, h [, r, g, b, a])`
 ###### `Buffer:drawCircle(x, y, radius [, r, b, g, a])`
 ###### `Buffer:drawRing(x, y, radius [, r, b, g, a])`
-###### `Buffer:polygon(x, y, side, radius [, angle])`
+###### `Buffer:drawPolygon(x, y, side, radius, rot, r, g, b, a)`
 ###### `Buffer:drawText([font,] text, x, y [, width])`
 ###### `Buffer:drawBuffer(src, x, y [, sub, rot, sx, sy, ox, oy])`
 ###### `Buffer:draw(src, x, y [, sub, rot, sx, sy, ox, oy])`
@@ -159,6 +159,7 @@ https://github.com/rxi/lovedos/blob/master/doc/api.md
 ###### `juno.graphics.getFullscreen()`
 ###### `juno.graphics.setBlend(mode)`
 ###### `juno.graphics.drawRing(x, y, radius, r, b, g, a)`
+###### `juno.graphics.drawPolygon(x, y, side, radius, rot, r, g, b, a)`
 ###### `juno.graphics.getWidth()`
 ###### `juno.graphics.setClearColor(r, g, b, a)`
 ###### `juno.graphics.getClearColor()`
