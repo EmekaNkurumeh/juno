@@ -71,7 +71,7 @@ function juno.Buffer:drawText(font, text, x, y, width)
 end
 
 
-local sin, cos, pi = math.sin, math.cos, math.pi
+local sin, cos, pi, max = math.sin, math.cos, math.pi, math.max
 
 function juno.Buffer:drawPolygon(x, y, sides, radius, rot, r, g, b, a)
   checkArg(1, x == nil or type(x) == "number", "expected number")
@@ -83,8 +83,8 @@ function juno.Buffer:drawPolygon(x, y, sides, radius, rot, r, g, b, a)
 
   -- Find the vertices of the polygon
   for n = 1, sides do
-    x_coords[n] = radius * cos(2*pi*n/sides + (rot and rot or 0)) + x
-    y_coords[n] = radius * sin(2*pi*n/sides + (rot and rot or 0)) + y
+    x_coords[n] = radius * cos(2 * pi * n / sides + (rot and rot or 0)) + x
+    y_coords[n] = radius * sin(2 * pi * n / sides + (rot and rot or 0)) + y
   end
 
   x_coords[sides + 1] = x_coords[1]
@@ -93,7 +93,7 @@ function juno.Buffer:drawPolygon(x, y, sides, radius, rot, r, g, b, a)
   -- Draw the lines between each vertice
   for n = 1, sides + 1 do
     local x, y = x_coords[n], y_coords[n]
-    local x1, y1 = x_coords[math.max(1, n-1)], y_coords[math.max(1, n-1)]
+    local x1, y1 = x_coords[max(1, n - 1)], y_coords[max(1, n -1 )]
     self:drawLine(x, y, x1, y1, r, g, b, a)
   end
 end
