@@ -282,7 +282,7 @@ if juno.fs.exists("main.lua") then
 else
   -- No project file -- init "no project loaded" screen
   local w, h = juno.graphics.getSize()
-  local txt = juno.Font.fromEmbedded(14):render("No project loaded")
+  local txt = juno.Font.fromEmbedded(16):render("No project loaded")
   local txtPost = txt:clone()
   local txtMask = txt:clone()
   local particles = {}
