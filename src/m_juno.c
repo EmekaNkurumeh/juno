@@ -12,7 +12,7 @@
 #define JUNO_VERSION "0.3.0"
 
 
-static int l_juno_getVersion(lua_State *L) {
+static int l_sol_getVersion(lua_State *L) {
   lua_pushstring(L, JUNO_VERSION);
   return 1;
 }
@@ -31,9 +31,9 @@ int luaopen_source(lua_State *L);
 int luaopen_data(lua_State *L);
 int luaopen_gif(lua_State *L);
 
-int luaopen_juno(lua_State *L) {
+int luaopen_sol(lua_State *L) {
   luaL_Reg reg[] = {
-    { "getVersion",  l_juno_getVersion  },
+    { "getVersion",  l_sol_getVersion  },
     { NULL, NULL }
   };
   luaL_newlib(L, reg);

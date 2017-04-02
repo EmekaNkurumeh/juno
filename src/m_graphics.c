@@ -50,7 +50,7 @@ static void resetVideoMode(lua_State *L) {
 static int l_graphics_init(lua_State *L) {
   screenWidth = luaL_checkint(L, 1);
   screenHeight = luaL_checkint(L, 2);
-  const char *title = luaL_optstring(L, 3, "Juno");
+  const char *title = luaL_optstring(L, 3, "Sol");
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);

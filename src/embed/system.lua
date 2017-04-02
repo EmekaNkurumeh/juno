@@ -10,7 +10,7 @@ local function call(fn, ...)
 end
 
 
-function juno.system.quit()
-  call(juno.onQuit)
+function sol.system.quit()
+  call(sol.onQuit)
   os.exit()
 end

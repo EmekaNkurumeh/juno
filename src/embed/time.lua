@@ -14,8 +14,8 @@ local avgAcc = 1
 local avgCount = 1
 
 
-function juno.time.step()
-  local now = juno.time.getTime()
+function sol.time.step()
+  local now = sol.time.getTime()
   if last == 0 then last = now end
   delta = now - last
   last = now
@@ -31,17 +31,17 @@ function juno.time.step()
 end
 
 
-function juno.time.getDelta()
+function sol.time.getDelta()
   return delta
 end
 
 
-function juno.time.getAverage()
+function sol.time.getAverage()
   return average
 end
 
 
-function juno.time.getFps()
+function sol.time.getFps()
   return math.floor(1 / average + .5)
 end
 

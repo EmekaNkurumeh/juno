@@ -2,7 +2,7 @@
 import os, sys, shutil, platform, time
 import cembed
 
-OUTPUT = "bin/juno"
+OUTPUT = "bin/sol"
 EMBED_DIR = "src/embed"
 TEMPSRC_DIR = ".tempsrc"
 COMPILER = "gcc"
@@ -54,7 +54,7 @@ def main():
   # Handle args
   build = "debug" if "debug" in sys.argv else "release"
   verbose = "verbose" in sys.argv
-  
+
   # Handle build type
   if build == "debug":
     FLAGS += [ "-g" ]
@@ -67,7 +67,7 @@ def main():
     SOURCE += ["src/lib/lua51/*.c"]
 
   print "building (" + build + ")..."
-  
+
   # Make sure there arn't any temp files left over from a previous build
   clearup()
 
@@ -85,7 +85,7 @@ def main():
 
   # Build
   cmd = fmt(
-    "{compiler} -o {output} {flags} {source} {include} {link} {define} " + 
+    "{compiler} -o {output} {flags} {source} {include} {link} {define} " +
     "{extra}",
     {
       "compiler"  : COMPILER,
@@ -97,7 +97,7 @@ def main():
       "flags"     : " ".join(FLAGS),
       "extra"     : EXTRA,
     })
- 
+
   if verbose:
     print cmd
 
@@ -119,5 +119,4 @@ def main():
 
 
 if __name__ == "__main__":
-  main() 
-
+  main()

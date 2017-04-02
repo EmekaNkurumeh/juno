@@ -11,7 +11,7 @@ local buttonsDown = {}
 local buttonsPressed = {}
 
 
-function juno.mouse._onEvent(e)
+function sol.mouse._onEvent(e)
   if e.type == "mousemove" then
     position.x, position.y = e.x, e.y
   elseif e.type == "mousebuttondown" then
@@ -23,14 +23,14 @@ function juno.mouse._onEvent(e)
 end
 
 
-function juno.mouse.reset()
+function sol.mouse.reset()
   for k in pairs(buttonsPressed) do
     buttonsPressed[k] = nil
   end
 end
 
 
-function juno.mouse.isDown(...)
+function sol.mouse.isDown(...)
   for i = 1, select("#", ...) do
     local b = select(i, ...)
     if buttonsDown[b] then
@@ -41,7 +41,7 @@ function juno.mouse.isDown(...)
 end
 
 
-function juno.mouse.wasPressed(...)
+function sol.mouse.wasPressed(...)
   for i = 1, select("#", ...) do
     local b = select(i, ...)
     if buttonsPressed[b] then
@@ -52,16 +52,16 @@ function juno.mouse.wasPressed(...)
 end
 
 
-function juno.mouse.getPosition()
+function sol.mouse.getPosition()
   return position.x, position.y
 end
 
 
-function juno.mouse.getX()
+function sol.mouse.getX()
   return position.x
 end
 
 
-function juno.mouse.getY()
+function sol.mouse.getY()
   return position.y
 end

@@ -11,7 +11,7 @@ function set_audio_callback(wave)
   else
     gen = osc[wave](math.random(550), 1)
   end
-  juno.audio.master:setCallback(function(t)
+  sol.audio.master:setCallback(function(t)
     -- Clear visualisation table
     for i in ipairs(vis) do
       vis[i] = nil
@@ -41,34 +41,34 @@ function set_audio_callback(wave)
   end)
 end
 
-function juno.onLoad()
-  juno.debug.setVisible(true)
+function sol.onLoad()
+  sol.debug.setVisible(true)
   vis = {}
   freq = 0
   gain = 0
-  juno.debug.addIndicator(function()
+  sol.debug.addIndicator(function()
     return "freq",freq
   end)
-  juno.debug.addIndicator(function()
+  sol.debug.addIndicator(function()
     return "gain",gain
   end)
   set_audio_callback("sin")
 end
 
-function juno.onUpdate(dt)
-  if juno.keyboard.isDown("right") then
+function sol.onUpdate(dt)
+  if sol.keyboard.isDown("right") then
     vol = vol + .1
-  elseif juno.keyboard.isDown("left") then
+  elseif sol.keyboard.isDown("left") then
     vol = math.max(0, vol - .1)
   end
 end
 
-function juno.onMouseMove(x, y)
-  gain = (math.pow(1 - (y / juno.graphics.getWidth()), 1.8))
-  freq = math.pow(x / juno.graphics.getHeight(), 2) * 3000 + 120
+function sol.onMouseMove(x, y)
+  gain = (math.pow(1 - (y / sol.graphics.getWidth()), 1.8))
+  freq = math.pow(x / sol.graphics.getHeight(), 2) * 3000 + 120
 end
 
-function juno.onKeyDown(key)
+function sol.onKeyDown(key)
   key = tonumber(key)
   if key == 1 then
     set_audio_callback("sin")
@@ -86,23 +86,23 @@ function juno.onKeyDown(key)
 end
 
 
-function juno.onDraw()
+function sol.onDraw()
   -- Draw waveform
-  juno.graphics.setColor(.7, .7, .7)
-  local w, h = juno.graphics.getSize()
+  sol.graphics.setColor(.7, .7, .7)
+  local w, h = sol.graphics.getSize()
   local lastx, lasty
   for i, v in ipairs(vis) do
     local x, y = (i / #vis) * w, h / 2 + v * 100
     if i ~= 1 then
-      juno.graphics.drawLine(lastx, lasty, x, y)
+      sol.graphics.drawLine(lastx, lasty, x, y)
     end
     lastx, lasty = x, y
   end
   -- Draw x/y lines and info text
-  juno.graphics.reset()
-  local x, y = juno.mouse.getPosition()
-  juno.graphics.drawLine(x, 0, x, juno.graphics.getHeight())
-  juno.graphics.drawLine(0, y, juno.graphics.getWidth(), y)
-  juno.graphics.drawText(string.format("freq: %.2fhz\ngain: %.2f",
+  sol.graphics.reset()
+  local x, y = sol.mouse.getPosition()
+  sol.graphics.drawLine(x, 0, x, sol.graphics.getHeight())
+  sol.graphics.drawLine(0, y, sol.graphics.getWidth(), y)
+  sol.graphics.drawText(string.format("freq: %.2fhz\ngain: %.2f",
                                        freq, gain), x + 10, y + 10)
 end

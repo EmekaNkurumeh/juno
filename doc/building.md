@@ -1,4 +1,4 @@
-# Building Juno
+# Building Sol
 
 ## Requirements
 * `gcc` or `clang` is used to compile
@@ -9,10 +9,10 @@
 These dependencies must be met before building.
 
 ## Building
-Juno can be built on Linux, Windows and OS X. To build you should first clone the repo and cd into it
+Sol can be built on Linux, Windows and OS X. To build you should first clone the repo and cd into it
 ```bash
-git clone https://github.com/rxi/juno.git
-cd juno
+git clone https://github.com/rxi/sol.git
+cd sol
 ```
 
 The build script should then be executed:
@@ -25,16 +25,16 @@ On windows:
 build.py
 ```
 
-When the build is finished an executable named `juno` (or `juno.exe` on windows) should exist in the `bin/` directory.
+When the build is finished an executable named `sol` (or `sol.exe` on windows) should exist in the `bin/` directory.
 
 You can test it works by executing one of the example projects:
 ```bash
-./bin/juno example/particles
+./bin/sol example/particles
 ```
 
 On windows:
 ```bash
-bin/juno example/particles
+bin/sol example/particles
 ```
 
 

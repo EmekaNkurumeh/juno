@@ -16,7 +16,7 @@ local min, max, sqrt = math.min, math.max, math.sqrt
 local rot = 0
 local str_sides = ""
 local num_sides = 1
-local font = juno.Font.fromEmbedded(8)
+local font = sol.Font.fromEmbedded(8)
 
 local function drawShapes()
   while true do
@@ -35,21 +35,21 @@ end
 local drawShapes = coroutine.wrap(drawShapes)
 
 
-function juno.onLoad(dt)
-  math.randomseed(juno.time.getNow())
-  juno.debug.setVisible(true)
-  G.screen = juno.Buffer.fromBlank(G.width, G.height)
+function sol.onLoad(dt)
+  math.randomseed(sol.time.getNow())
+  sol.debug.setVisible(true)
+  G.screen = sol.Buffer.fromBlank(G.width, G.height)
 
 end
 
 
-function juno.onUpdate(dt)
-  if juno.keyboard.wasPressed("escape") then juno.system.quit() end
+function sol.onUpdate(dt)
+  if sol.keyboard.wasPressed("escape") then sol.system.quit() end
   rot = rot + dt
 end
 
 
-function juno.onKeyDown(key, char)
+function sol.onKeyDown(key, char)
   if key == "return" and #str_sides > 0 then
     num_sides = tonumber(str_sides)
     str_sides = ""
@@ -61,10 +61,10 @@ function juno.onKeyDown(key, char)
 end
 
 
-function juno.onDraw()
+function sol.onDraw()
   G.screen:clear(0,0,0,1)
   -- G.screen:setBlend("add")
   drawShapes()
   G.screen:copyPixels(font:render(str_sides), 2, G.width - (font:getHeight() - 2))
-  juno.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)
+  sol.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)
 end

@@ -27,7 +27,7 @@ static void shutdown(void) {
 #endif
 }
 
-int luaopen_juno(lua_State *L);
+int luaopen_sol(lua_State *L);
 
 int main(int argc, char **argv) {
 
@@ -43,10 +43,10 @@ int main(int argc, char **argv) {
   luaL_openlibs(L);
 
   /* Init main module -- this also inits the submodules */
-  luaL_requiref(L, "juno", luaopen_juno, 1);
+  luaL_requiref(L, "sol", luaopen_sol, 1);
 
   /* Push command line arguments */
-  lua_getglobal(L, "juno");
+  lua_getglobal(L, "sol");
   if (!lua_isnil(L, -1)) {
     lua_newtable(L);
     int i;
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
     screen = SDL_GetVideoSurface();
     if (screen && SDL_MUSTLOCK(screen)) SDL_LockSurface(screen);
     ASSERT(SDL_LockMutex(luaMutex) == 0);
-    lua_getglobal(L, "juno");
+    lua_getglobal(L, "sol");
     if (!lua_isnil(L, -1)) {
       lua_getfield(L, -1, "_onStep");
       if (!lua_isnil(L, -1)) {

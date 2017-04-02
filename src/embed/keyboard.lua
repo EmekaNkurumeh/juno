@@ -7,15 +7,15 @@
 
 
 -- The table is checked and created here if it does not exist, at the time of
--- writing this the juno.keyboard does not have a C module, and so the table
+-- writing this the sol.keyboard does not have a C module, and so the table
 -- won't exist yet.
-juno.keyboard = juno.keyboard or {}
+sol.keyboard = sol.keyboard or {}
 
 local keysDown = {}
 local keysPressed = {}
 
 
-function juno.keyboard._onEvent(e)
+function sol.keyboard._onEvent(e)
   if e.type == "keydown" then
     keysDown[e.key] = true
     keysPressed[e.key] = true
@@ -25,14 +25,14 @@ function juno.keyboard._onEvent(e)
 end
 
 
-function juno.keyboard.reset()
+function sol.keyboard.reset()
   for k in pairs(keysPressed) do
     keysPressed[k] = nil
   end
 end
 
 
-function juno.keyboard.isDown(...)
+function sol.keyboard.isDown(...)
   for i = 1, select("#", ...) do
     local k = select(i, ...)
     if keysDown[k] then
@@ -43,7 +43,7 @@ function juno.keyboard.isDown(...)
 end
 
 
-function juno.keyboard.wasPressed(...)
+function sol.keyboard.wasPressed(...)
   for i = 1, select("#", ...) do
     local k = select(i, ...)
     if keysPressed[k] then

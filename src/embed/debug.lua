@@ -6,7 +6,7 @@
 --
 
 
-juno.debug = juno.debug or {}
+sol.debug = sol.debug or {}
 
 local font
 local inited = false
@@ -60,7 +60,7 @@ local function newIndicator(fn, min, max)
   local maxBars = 16
   local barUpdatePeriod = 1
   local yoffset = pad + height * indicatorIdx
-  local lastUpdate = juno.time.getNow()
+  local lastUpdate = sol.time.getNow()
   local bars = {}
   local lastMin = min
   local lastMax = max
@@ -74,24 +74,24 @@ local function newIndicator(fn, min, max)
     -- Resize text region?
     textRegionWidth = math.max(font:getWidth(txt) + 8, textRegionWidth)
     -- Update bars?
-    if juno.time.getNow() > lastUpdate + barUpdatePeriod then
+    if sol.time.getNow() > lastUpdate + barUpdatePeriod then
       table.remove(bars)
       table.insert(bars, 1, val)
       min = math.min(trueMin, unpack(bars))
       max = math.max(trueMax, unpack(bars))
-      lastUpdate = juno.time.getNow()
+      lastUpdate = sol.time.getNow()
     end
     -- Draw text
     local w = textRegionWidth
-    juno.graphics.drawRect(pad / 2, yoffset - (pad / 2),
+    sol.graphics.drawRect(pad / 2, yoffset - (pad / 2),
                            w, height - 1, 0, 0, 0, .8)
-    juno.graphics.drawText(font, txt, pad, yoffset)
+    sol.graphics.drawText(font, txt, pad, yoffset)
     -- Draw bars
-    juno.graphics.drawRect(pad / 2 + w + 1, yoffset - (pad / 2),
+    sol.graphics.drawRect(pad / 2 + w + 1, yoffset - (pad / 2),
                            73, height - 1, 0, 0, 0, .8)
     for i, v in ipairs(bars) do
       local x = math.floor((bars[i] - min) / (max - min) * 16)
-      juno.graphics.drawRect(pad / 2 + w + 1 + (i - 1) * 4 + 5,
+      sol.graphics.drawRect(pad / 2 + w + 1 + (i - 1) * 4 + 5,
                              yoffset + 16 - x, 3, x,
                              nil, nil, nil, (i == 1) and 1 or .4)
     end
@@ -109,7 +109,7 @@ local function draw()
     return
   end
   -- Draw
-  juno.graphics.reset()
+  sol.graphics.reset()
   -- Draw indicators
   for i, v in ipairs(indicators) do
     v()
@@ -118,13 +118,13 @@ local function draw()
   local w = 300
   if focused then
     local h = font:getHeight()
-    local y = juno.graphics.getHeight() - 8 - h
-    local caret = (juno.time.getTime() % .6 < .3) and "_" or " "
+    local y = sol.graphics.getHeight() - 8 - h
+    local caret = (sol.time.getTime() % .6 < .3) and "_" or " "
     w = math.max(w, font:getWidth(inputbuf .. "_" .. enputbuf))
-    juno.graphics.drawRect(4, juno.graphics.getHeight() - h - 12,
+    sol.graphics.drawRect(4, sol.graphics.getHeight() - h - 12,
                            w + 8, h + 8,
                            0, 0, 0, .8)
-    juno.graphics.drawText(font, "> " .. inputbuf .. caret .. enputbuf, 8, y)
+    sol.graphics.drawText(font, "> " .. inputbuf .. caret .. enputbuf, 8, y)
   end
   -- Draw console output text
   if #lines > 0 then
@@ -134,12 +134,12 @@ local function draw()
     for i, v in ipairs(lines) do
       w = math.max(w, font:getWidth(v))
     end
-    juno.graphics.drawRect(4, juno.graphics.getHeight() - 4 - rh - oy,
+    sol.graphics.drawRect(4, sol.graphics.getHeight() - 4 - rh - oy,
                            w + 8, rh,
                            0, 0, 0, .8)
     for i, v in ipairs(lines) do
-      local y = juno.graphics.getHeight() - 8 - (#lines - i + 1) * h
-      juno.graphics.drawText(font, v, 8, y - oy)
+      local y = sol.graphics.getHeight() - 8 - (#lines - i + 1) * h
+      sol.graphics.drawText(font, v, 8, y - oy)
     end
   end
 end
@@ -147,20 +147,20 @@ end
 
 local function init()
   -- Init font
-  font = juno.Font.fromEmbedded(12)
+  font = sol.Font.fromEmbedded(12)
   -- Init indicators
-  juno.debug.addIndicator(function()
-    local r = juno.time.getFps()
+  sol.debug.addIndicator(function()
+    local r = sol.time.getFps()
     return r .. "fps", r
   end)
-  juno.debug.addIndicator(function()
+  sol.debug.addIndicator(function()
     local r = collectgarbage("count")
     return string.format("%.2fmb", r / 1024), r
   end)
   -- Override present function to draw the debug information before calling the
   -- proper present function
-  local present = juno.graphics.present
-  juno.graphics.present = function(...)
+  local present = sol.graphics.present
+  sol.graphics.present = function(...)
     draw()
     present(...)
   end
@@ -173,7 +173,7 @@ local onError = function(msg)
   print("error: " .. msg:match("[^\n]+"))
 end
 
-function juno.debug._onEvent(e)
+function sol.debug._onEvent(e)
   -- Handle console's keyboard input
   if e.type == "keydown" and enabled and focused then
     if e.key == "backspace" then
@@ -231,40 +231,40 @@ function juno.debug._onEvent(e)
 end
 
 
-function juno.debug._draw()
+function sol.debug._draw()
   draw()
 end
 
 
-function juno.debug.setVisible(x)
+function sol.debug.setVisible(x)
   enabled = x and true or false
   if enabled and not inited then
     init()
   end
 end
 
-function juno.debug.getVisible(x)
+function sol.debug.getVisible(x)
   return enabled
 end
 
 
-function juno.debug.setFocused(x)
+function sol.debug.setFocused(x)
   focused = x and true or false
 end
 
-function juno.debug.getFocused(x)
+function sol.debug.getFocused(x)
   return focused
 end
 
 
-function juno.debug.clear()
+function sol.debug.clear()
   while #lines > 0 do
     table.remove(lines)
   end
 end
 
 
-function juno.debug.addIndicator(fn, min, max)
+function sol.debug.addIndicator(fn, min, max)
   -- Error check
   local str, num = fn()
   if type(str) ~= "string" or type(num) ~= "number" then
@@ -283,7 +283,7 @@ function juno.debug.addIndicator(fn, min, max)
 end
 
 
-function juno.debug.removeIndicator(indicator)
+function sol.debug.removeIndicator(indicator)
   for i, v in ipairs(indicators) do
     if v == indicator then
       table.remove(indicators, i)

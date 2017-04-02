@@ -6,29 +6,29 @@
 --
 
 
--- Override juno.graphics.init function
-local init = juno.graphics.init
+-- Override sol.graphics.init function
+local init = sol.graphics.init
 
-juno.graphics.init = function(...)
+sol.graphics.init = function(...)
   -- Do init
   local screen = init(...)
-  juno.graphics.screen = screen
+  sol.graphics.screen = screen
   -- Bind the screen buffer's methods to the graphics module
-  for k, v in pairs(juno.Buffer) do
-    if not juno.graphics[k] then
-      juno.graphics[k] = function(...)
+  for k, v in pairs(sol.Buffer) do
+    if not sol.graphics[k] then
+      sol.graphics[k] = function(...)
         return v(screen, ...)
       end
     end
   end
   -- Unbind Buffer constructors (which make no sense bound)
-  juno.graphics.fromBlank  = nil
-  juno.graphics.fromFile   = nil
-  juno.graphics.fromString = nil
-  -- Override juno.graphics.clear() to use _clearColor if available
-  local clear = juno.graphics.clear
-  function juno.graphics.clear(r, g, b, a)
-    local c = juno.graphics._clearColor
+  sol.graphics.fromBlank  = nil
+  sol.graphics.fromFile   = nil
+  sol.graphics.fromString = nil
+  -- Override sol.graphics.clear() to use _clearColor if available
+  local clear = sol.graphics.clear
+  function sol.graphics.clear(r, g, b, a)
+    local c = sol.graphics._clearColor
     r = r or (c and c[1])
     g = g or (c and c[2])
     b = b or (c and c[3])
@@ -39,17 +39,17 @@ juno.graphics.init = function(...)
 end
 
 
-function juno.graphics.setClearColor(...)
-  juno.graphics._clearColor = { ... }
+function sol.graphics.setClearColor(...)
+  sol.graphics._clearColor = { ... }
 end
 
-function juno.graphics.getClearColor(...)
-  return unpack(juno.graphics._clearColor)
+function sol.graphics.getClearColor(...)
+  return unpack(sol.graphics._clearColor)
 end
 
 
-function juno.graphics._onEvent(e)
+function sol.graphics._onEvent(e)
   if e.type == "resize" then
-    juno.graphics.setSize(e.width, e.height)
+    sol.graphics.setSize(e.width, e.height)
   end
 end

@@ -495,7 +495,7 @@ void source_process(Source *self, int len) {
     lockLua();
     lua_State *L = luaState;
     /* Get _pcall function */
-    lua_getglobal(L, "juno");
+    lua_getglobal(L, "sol");
     if (!lua_isnil(L, -1)) {
       lua_getfield(L, -1, "_pcall");
       if (!lua_isnil(L, -1)) {
@@ -524,7 +524,7 @@ void source_process(Source *self, int len) {
          * can access it to copy the PCM data back to Source.buf below */
         lua_pushvalue(L, -1);
         lua_insert(L, -4);
-        /* Call function: juno._pcall(callback, table) -> 1 return */
+        /* Call function: sol._pcall(callback, table) -> 1 return */
         lua_call(L, 2, 1);
         /* Check return value -- if it is false then an error occured, in this
          * case we unset the callback function so it doesn't keep getting
@@ -544,7 +544,7 @@ void source_process(Source *self, int len) {
         /* Pop PCM table */
         lua_pop(L, 1);
       }
-      /* Pop `juno` table */
+      /* Pop `sol` table */
       lua_pop(L, 1);
     }
     unlockLua();

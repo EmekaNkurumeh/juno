@@ -13,12 +13,12 @@ local function checkArg(idx, cond, msg)
 end
 
 
-function juno.Buffer:getSize()
+function sol.Buffer:getSize()
   return self:getWidth(), self:getHeight()
 end
 
 
-local defaultFont = juno.Font.fromEmbedded()
+local defaultFont = sol.Font.fromEmbedded()
 
 local fontTexCache = {}
 setmetatable(fontTexCache, {
@@ -29,7 +29,7 @@ setmetatable(fontTexCache, {
   __mode = "v",
 })
 
-function juno.Buffer:drawText(font, text, x, y, width)
+function sol.Buffer:drawText(font, text, x, y, width)
   if type(font) ~= "userdata" then
     return self:drawText(defaultFont, font, text, x, y, width)
   end
@@ -44,7 +44,7 @@ function juno.Buffer:drawText(font, text, x, y, width)
     for word in text:gmatch("%S+") do
       local tmp = (line and (line .. " ") or "") .. word
       if font:getWidth(tmp) > width then
-        juno.graphics.drawText(font, line, x, y)
+        sol.graphics.drawText(font, line, x, y)
         y = y + height
         line = word
       else
@@ -73,7 +73,7 @@ end
 
 local sin, cos, pi, max = math.sin, math.cos, math.pi, math.max
 
-function juno.Buffer:drawPolygon(x, y, sides, radius, rot, r, g, b, a)
+function sol.Buffer:drawPolygon(x, y, sides, radius, rot, r, g, b, a)
   checkArg(1, x == nil or type(x) == "number", "expected number")
   checkArg(2, y == nil or type(y) == "number", "expected number")
   checkArg(3, sides == nil or type(sides) == "number", "expected number")

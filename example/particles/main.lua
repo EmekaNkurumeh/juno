@@ -1,10 +1,10 @@
 
 
-function juno.onLoad(dt)
-  math.randomseed(juno.time.getNow())
-  juno.debug.setVisible(true)
-  G.screen = juno.Buffer.fromBlank(G.width, G.height)
-  G.particle = juno.Buffer.fromFile("data/image/particle.png")
+function sol.onLoad(dt)
+  math.randomseed(sol.time.getNow())
+  sol.debug.setVisible(true)
+  G.screen = sol.Buffer.fromBlank(G.width, G.height)
+  G.particle = sol.Buffer.fromFile("data/image/particle.png")
   G.particles = {}
   for i = 0, 200 do
     table.insert(G.particles, {
@@ -20,9 +20,9 @@ function juno.onLoad(dt)
 end
 
 
-function juno.onUpdate(dt)
-  if juno.keyboard.wasPressed("escape") then juno.system.quit() end
-  if juno.keyboard.wasPressed("`") then juno.debug.setFocused(not juno.debug.getFocused()) end
+function sol.onUpdate(dt)
+  if sol.keyboard.wasPressed("escape") then sol.system.quit() end
+  if sol.keyboard.wasPressed("`") then sol.debug.setFocused(not sol.debug.getFocused()) end
   for i, p in ipairs(G.particles) do
     p.x = p.x + p.vx * dt
     p.y = p.y + p.vy * dt
@@ -44,7 +44,7 @@ function juno.onUpdate(dt)
 end
 
 
-function juno.onDraw()
+function sol.onDraw()
   G.screen:clear(0,0,0,1)
   G.screen:setBlend("add")
   G.screen:setColor(.2, .4, 1)
@@ -53,6 +53,6 @@ function juno.onDraw()
     G.screen:draw(G.particle, G.width / 2 + p.x, G.height / 2 + p.y,
                   nil, 0, p.s, p.s, 16, 16)
   end
-  juno.bufferfx.dissolve(G.screen,math.random())
-  juno.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)
+  sol.bufferfx.dissolve(G.screen,math.random())
+  sol.graphics.draw(G.screen, 0, 0, nil, nil, G.scale)
 end
