@@ -9,11 +9,11 @@
 #include "luax.h"
 #include <SDL/SDL.h>
 
-#define JUNO_VERSION "0.3.0"
+#define SOL_VERSION "0.3.0"
 
 
 static int l_sol_getVersion(lua_State *L) {
-  lua_pushstring(L, JUNO_VERSION);
+  lua_pushstring(L, SOL_VERSION);
   return 1;
 }
 
