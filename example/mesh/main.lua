@@ -61,17 +61,11 @@ function sol.onUpdate(dt)
     local txt_x = (height - txt:getWidth()) / 2
     local txt_y = (height - txt:getHeight()) / 2
     local over_x = p.x > txt_x and p.x < txt_x + txt:getWidth()
-    local over_y = p.y > txt_y and p.y < txt_y + txt:getHeight()
+    local over_y = p.y >= txt_y and p.y <= txt_y + txt:getHeight()
 
-    if over_x and over_y then
-      if over_x and abs(p.vx) > abs(p.vy) then
-			  -- p.vx = -p.vx
-        p.vy = -p.vy
-
-      end
+    if over_y then
       if over_y and abs(p.vy) > abs(p.vx) then
-        p.vx = -p.vx
-			  -- p.vy = -p.vy
+        p.vy = -p.vy
       end
 		end
 
