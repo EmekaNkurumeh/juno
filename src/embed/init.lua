@@ -286,7 +286,7 @@ end
 -------------------------------------------------------------------------------
 
 local appdata = sol.system.info("appdata")
-local path = appdata .. "/sol/" .. config.identity
+local path = appdata .. "/" .. config.identity
 
 sol.fs.setWritePath(path)
 sol.fs.mount(path)
