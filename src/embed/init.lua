@@ -129,6 +129,37 @@ function sol._pcall(fn, ...)
   return xpcall(pcallWrap, onError)
 end
 
+local function wordwrap(str, limit)
+  limit = limit or 72
+  local check
+  if type(limit) == "number" then
+    check = function(s) return #s >= limit end
+  else
+    check = limit
+  end
+  local rtn = {}
+  local line = ""
+  for word, spaces in str:gmatch("(%S+)(%s*)") do
+    local s = line .. word
+    if check(s) then
+      table.insert(rtn, line .. "\n")
+      line = word
+    else
+      line = s
+    end
+    for c in spaces:gmatch(".") do
+      if c == "\n" then
+        table.insert(rtn, line .. "\n")
+        line = ""
+      else
+        line = line .. c
+      end
+    end
+  end
+  table.insert(rtn, line)
+  return table.concat(rtn)
+end
+
 function sol.onError(msg, stacktrace)
   -- Create and print error string
   local tab = "    "
@@ -172,8 +203,8 @@ function sol.onError(msg, stacktrace)
 
   function sol.onDraw()
     sol.graphics.setAlpha(alpha)
-    sol.graphics.drawText(bigfont, "Error", 40, 40)
-    sol.graphics.drawText(font, str, 40, 120)
+    sol.graphics.drawText(bigfont, "ERROR", 40, 40)
+    sol.graphics.drawText(font, wordwrap(str, 62), 40, 120)
     -- As this screen won't change after its faded in we can sleep here to
     -- avoid having to redraw too often -- this will reduce CPU usage
     if done then
@@ -235,8 +266,8 @@ end
 
 local config = merge({
   title       = "Sol " .. sol.getVersion(),
-  width       = 500,
-  height      = 500,
+  width       = 512,
+  height      = 512,
   maxfps      = 60,
   samplerate  = 44100,
   buffersize  = 2048,
@@ -281,64 +312,99 @@ if sol.fs.exists("main.lua") then
   xpcall(function() require "main" end, onError)
 else
   -- No project file -- init "no project loaded" screen
-  local w, h = sol.graphics.getSize()
-  local txt = sol.Font.fromEmbedded(16):render("No project loaded")
+  local width, height = sol.graphics.getSize()
+  local txt = sol.Font.fromEmbedded(32):render("NO PROJECT LOADED")
   local txtPost = txt:clone()
   local txtMask = txt:clone()
+  local particle_count = 80
   local particles = {}
 
+  local stroke = {
+    { -1, -1 }, { -1,  0 }, { -1,  1 },
+    { -0, -1 },             { -0,  1 },
+    {  1, -1 }, {  1,  0 }, {  1,  1 },
+  }
+
+  local function round(x)
+    return x >= 0 and math.floor(x + .5) or math.ceil(x - .5)
+  end
+
+  local function random(a, b)
+    if not a then a, b = 0, 1 end
+    if not b then b = 0 end
+    return a + math.random() * (b - a)
+  end
+
   function sol.onLoad()
-    sol.graphics.setClearColor(0.15, 0.15, 0.15)
-    for i = 1, 30 do
+  	math.randomseed(sol.time.getNow())
+  	sol.graphics.setClearColor(0.15, 0.15, 0.15)
+    for i = particle_count, 1, -1 do
       local p = {
-        x = 0,
-        y = (i / 30) * 100,
-        z = 0,
-        r = (i / 30) * 2,
-      }
-      table.insert(particles, p)
+    		x  = random(width),
+        y  = random(height),
+    		vx = random(1.25) * ({-1, 1})[round(random(1, 2))],
+    		vy = random(1.25) * ({1, -1})[round(random(1, 2))],
+  		}
+    	particles[i] = p
     end
   end
 
   function sol.onUpdate(dt)
-    local n = sol.time.getTime()
-    for _, p in ipairs(particles) do
-      p.x = math.cos(n * p.r) * 100
-      p.z = math.sin(n * p.r)
+    for i = particle_count, 1, -1 do
+  		local p = particles[i]
+  		if p.x >= (width + 16) or p.x < -16 then
+  			p.vx = -p.vx
+  		end
+  		if p.y >= (height + 16) or p.y < -16 then
+  			p.vy = -p.vy
+  		end
+  		p.x = p.x + p.vx
+    	p.y = p.y + p.vy
     end
-  end
-
-  function sol.onKeyDown(k)
-    if k == "escape" then
-      os.exit()
-    end
+    collectgarbage()
+    collectgarbage()
   end
 
   function sol.onDraw()
     -- Draw particles
-    sol.graphics.setBlend("add")
-    local lastx, lasty
-    for _, p in ipairs(particles) do
-      local x, y = (p.x * p.z) + w / 2, (p.y * p.z) + w / 2
-      sol.graphics.setAlpha(p.a)
-      sol.graphics.drawPixel(x, y)
-      if lastx then
-        sol.graphics.setAlpha(.3)
-        sol.graphics.drawLine(x, y, lastx, lasty)
-      end
-      lastx, lasty = x, y
+  	sol.graphics.setBlend("add")
+    for i = particle_count, 1, -1 do
+    	local p = particles[i]
+      sol.graphics.drawCircle(p.x, p.y, 4)
+  	  for j = particle_count, 1, -1 do
+  		  local o = particles[j]
+        local dist = math.sqrt((p.x - o.x)^2 + (p.y - o.y)^2)
+  			if math.sqrt((p.x - o.x)^2 + (p.y - o.y)^2) < 64 then
+          local r, g, b = 1, 1, 1
+          a = ((64 - math.sqrt((p.x - o.x)^2 + (p.y - o.y)^2)) * 4) / 255
+  				sol.graphics.drawLine(p.x, p.y, o.x, o.y, r, g, b, a)
+  			end
+  		end
     end
-    -- Draw text
-    local n = sol.time.getTime() * 2
+  	-- Draw text
+  	local n = sol.time.getTime() * 2
     local x = (1 + math.sin(n)) * txtMask:getWidth() / 2
     txtPost:copyPixels(txt)
     txtMask:clear(1, 1, 1, .5)
     txtMask:drawRect(x - 10, 0, 20, 100, 1, 1, 1, .6)
     txtMask:drawRect(x -  5, 0, 10, 100, 1, 1, 1, 1)
-    sol.bufferfx.mask(txtPost, txtMask)
-    local tx, ty = (h - txt:getWidth()) / 2, (h - txt:getHeight()) / 2
+  	sol.bufferfx.mask(txtPost, txtMask)
+    local tx, ty = (height - txt:getWidth()) / 2, (height - txt:getHeight()) / 2
     sol.graphics.reset()
-    sol.graphics.draw(txtPost, tx, ty + 130)
+    sol.graphics.setColor(0, 0, 0, 1)
+    for i = #stroke, 1, -1 do
+      local x = (tx - 4) + (1 + stroke[i][1]) * 4
+      local y = (ty - 4) + (1 + stroke[i][2]) * 4
+      sol.graphics.draw(txt, x, y)
+    end
+    sol.graphics.reset()
+  	sol.graphics.draw(txtPost, tx, ty)
+  end
+
+  function sol.onKeyDown(k)
+  	if k == "escape" then
+  		sol.system.quit()
+  	end
   end
 
 end
