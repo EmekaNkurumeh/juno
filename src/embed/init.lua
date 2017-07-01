@@ -187,7 +187,7 @@ function sol.onError(msg, stacktrace)
     -- which case it won't be able to change the openGL state
     sol.graphics.reset()
     sol.graphics.setClearColor(.15, .16, .2)
-    font = sol.Font.fromEmbedded(14)
+    font = sol.Font.fromEmbedded(16)
     bigfont = sol.Font.fromEmbedded(40)
     -- Init update function
     function sol.onUpdate(dt)
