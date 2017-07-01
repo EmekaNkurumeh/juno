@@ -11,7 +11,8 @@ end
 
 function sol.onUpdate(dt)
   require("stalker").update()
-  util.print(G.font, "txt", 2, 2, "brown", "orange")
+  util.draw_stroke(G.font, "Galaxy", 2, 2, "orange")
+  util.print(G.font, "Galaxy", 4 + G.font:getWidth("Galaxy"), 2, "orange", "brown")
 
 
   collectgarbage()

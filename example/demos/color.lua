@@ -1,5 +1,17 @@
 local _ = require "lume"
 
+--[[
+  "brown"     -> { "dark-purple" }
+  "light-grey"-> { "dark-grey"   }
+  "white"     -> { "peach"       }
+  "red"       -> { "dark-purple" }
+  "orange"    -> { "brown"       }
+  "yellow"    -> { "orange"      }
+  "green"     -> { "dark-green"  }
+  "blue"      -> { "indigo"      }
+  "indigo"    -> { "dark-blue"   }
+]]
+
 return {
   ["black"]       = { _.color("#000000", 1) },
   ["dark-blue"]   = { _.color("#1d2b53", 1) },

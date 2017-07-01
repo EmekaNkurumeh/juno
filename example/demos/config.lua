@@ -2,7 +2,7 @@ G = {
   title = "demos",
   width = 256,
   height = 256,
-  scale = 3.2
+  scale = 2
 }
 
 return {

@@ -129,6 +129,13 @@ static int l_font_getHeight(lua_State *L) {
 }
 
 
+static int l_font_getSize(lua_State *L) {
+  Font *self = luaL_checkudata(L, 1, CLASS_NAME);
+  lua_pushnumber(L, self->font->ptsize);
+  return 1;
+}
+
+
 int luaopen_font(lua_State *L) {
   luaL_Reg reg[] = {
     { "__gc",         l_font_gc           },
@@ -138,6 +145,7 @@ int luaopen_font(lua_State *L) {
     { "render",       l_font_render       },
     { "getWidth",     l_font_getWidth     },
     { "getHeight",    l_font_getHeight    },
+    { "getSize",      l_font_getSize      },
     { NULL, NULL }
   };
   ASSERT( luaL_newmetatable(L, CLASS_NAME) );
