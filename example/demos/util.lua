@@ -18,10 +18,10 @@ local nstroke = {
   {  0,  1, 0 },
 }
 
-function util.print(font, txt, x, y, c1, c2)
+function util.print(txt, x, y, c1, c2)
   G.framebuffer:reset()
   local s = 2
-  local txt = font:render(txt)
+  local txt = G.font:render(txt)
   for i = 1, #nstroke do
     local x = (x - s) + (1 + nstroke[i][1]) * s
     local y = (y - s) + (1 + nstroke[i][2]) * s
@@ -38,14 +38,15 @@ function util.print(font, txt, x, y, c1, c2)
   G.framebuffer:reset()
 end
 
-function util.draw_stroke(font, str, x, y, c)
+function util.draw_stroke(str, x, y, c)
   G.framebuffer:reset()
+  local txt = G.font:render(str)
   G.framebuffer:setColor(unpack(Color[c]))
-  for k, v in ipairs(stroke) do
-    G.framebuffer:drawText(font, str, x + v[1], y + v[2])
+  for i = 1, #stroke do
+    G.framebuffer:draw(txt, x + stroke[i][1], y + stroke[i][2] - 2)
   end
   G.framebuffer:setColor(unpack(Color["black"]))
-  G.framebuffer:drawText(font, str, x, y, w)
+  G.framebuffer:draw(txt, x, y - 2)
   G.framebuffer:reset()
 end
 
