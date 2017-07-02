@@ -1,4 +1,5 @@
-local Color = require "color"
+local _ = require "color"
+Color = _[1]
 
 local util = {}
 
