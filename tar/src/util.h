@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -16,7 +16,14 @@
               __FILE__, __LINE__, __func__, #x);\
       abort();\
     }\
-  } while (0)
+  } while (0);
+
+#define ERROR(...) do { \
+  fprintf(stderr, "[ERROR]: %s:%d %s(): ", __FILE__, __LINE__, __func__); \
+  fprintf(stderr, __VA_ARGS__); \
+  fprintf(stderr, "\n"); \
+  exit(EXIT_FAILURE); \
+} while(0);
 
 #define UNUSED(x)       ((void) (x))
 #define MIN(a, b)       ((b) < (a) ? (b) : (a))
