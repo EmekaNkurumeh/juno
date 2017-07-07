@@ -14,57 +14,70 @@
 #include "../../util.h"
 
 typedef struct {
+  FILE *file;
   char *data;
   char *name;
-  size_t len;
 } file_t;
 
 static file_t **files;
 static mtar_t tar;
 
+static FILE *file;
+static char *data;
+static size_t len;
+
+static void shutdown() {
+  /* Free file array */
+  // free(files);
+  /* Finalize -- this needs to be the last thing done before closing */
+  mtar_finalize(&tar);
+  /* Close archive */
+  mtar_close(&tar);
+}
 
 int main(int argc, char **argv) {
+  atexit(shutdown);
+
   /* Allocate memory for all the files */
-  files = calloc(argc - 2, sizeof(*files));
-  /* Read files into array */
-  FILE *f;
-  for (size_t i = 2; i < argc; i++) {
-    files[i]->name = argv[i];
-    f = fopen(files[i]->name, "rb");
-    files[i]->len = fread(files[i]->data );
-    if (!f) {
-      ERROR("could not read %s", argv[i]);
-    } else {
-      printf("read: %s\n", files[i]->name);
-    }
-  }
+  // files = calloc(argc - 2, sizeof(file_t*));
 
   /* Open archive for writing */
   mtar_open(&tar, argv[1], "w");
-
-  /* Write file data to tar file */
-  for (size_t i = 0; i < argc - 2; i++) {
-
-    mtar_write_file_header(&tar, files[i]->name, strlen(str1));
-    mtar_write_data(&tar, str1, strlen(str1));
-
-    files[i]->name = argv[i];
-    files[i]->data = fopen(files[i]->name, "rb");
-    if (!files[i]->data) {
-      ERROR("could not read %s", argv[i]);
+  /* Read files into array */
+  for (size_t i = 2; i < argc; i++) {
+    puts("s");
+    file = fopen(argv[i], "rb");
+    if (!file) {
+      ERROR("could not open %s", argv[i]);
     } else {
-      printf("read: %s\n", files[i]->name);
+      /* Get file size */
+      fseek(file, 0, SEEK_END);
+      len = ftell(file);
+      /* Load file */
+      fseek(file, 0, SEEK_SET);
+      if (fread(data, 1, len, file) != len) {
+        ERROR("could not read %s", argv[i]);
+      } else {
+        printf("read: %s\n", argv[i]);
+        fclose(file);
+        /* Write file data to tar file */
+        puts("test");
+        size_t res = mtar_write_file_header(&tar, argv[i], len);
+        puts("rest");
+        if (res == MTAR_ESUCCESS) {
+          res = mtar_write_data(&tar, data, len);
+          if (res != MTAR_ESUCCESS)
+            ERROR("%s", mtar_strerror(res));
+        } else {
+          ERROR("%s", mtar_strerror(res));
+        }
+        printf("wrote: %s \n", argv[i]);
+      }
     }
   }
 
-  /* Write file data to tar file */
-  // mtar_write_file_header(&tar, "test1.txt", strlen(str1));
-  // mtar_write_data(&tar, str1, strlen(str1));
-  // mtar_write_file_header(&tar, "test2.txt", strlen(str2));
-  // mtar_write_data(&tar, str2, strlen(str2));
-
   /* Free file array */
-  free(files);
+  // free(files);
   /* Finalize -- this needs to be the last thing done before closing */
   mtar_finalize(&tar);
   /* Close archive */
