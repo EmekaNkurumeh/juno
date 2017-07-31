@@ -22,6 +22,7 @@ if platform.system() == "Windows":
   OUTPUT += ".exe"
   LINK += [ "mingw32", "lua51", "SDLmain", "SDL" ]
   FLAGS += [ "-mwindows" ]
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 if platform.system() == "Linux":
   LINK += [ "luajit-5.1", "SDLmain", "SDL" ]
