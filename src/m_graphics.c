@@ -32,14 +32,21 @@ static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
   int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
               (resizable  ? SDL_RESIZABLE : 0)  |
-              (borderless ? SDL_NOFRAME : 0);
-  if (SDL_SetVideoMode(screenWidth, screenHeight, 32, flags) == NULL) {
+              (borderless ? SDL_NOFRAME : 0) | SDL_OPENGL;
+  
+  const SDL_VideoInfo* info = SDL_GetVideoInfo( );
+
+  if(!info) luaL_error(L," video query failed");
+  
+  int bpp = info->vfmt->BitsPerPixel;
+  
+  if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == NULL) {
     luaL_error(L, "could not set video mode");
   }
   /* Reset screen buffer */
   if (screen) {
     sr_Buffer *b = screen->buffer;
-    b->pixels = (void*) SDL_GetVideoSurface()->pixels;
+    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     b->w = screenWidth;
     b->h = screenHeight;
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
@@ -60,8 +67,23 @@ static int l_graphics_init(lua_State *L) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     luaL_error(L, "could not init video");
   }
+  
+  /* Setup OpenGL */
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  
   /* Init SDL video */
   resetVideoMode(L);
+  
+  /* Init GLEW */
+  glewExperimental = GL_TRUE;
+  glewInit(); GLuint vertexbuf;
+  glGenBuffers(1, &vertexbuf);
+  if (!vertexbuf) CERROR("failed to init GLEW");
+
+  /* OpenGL config */
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+  
   /* Required to get the associated character when a key is pressed. This has
    * to be enabled *after* SDL video is set up */
   SDL_EnableUNICODE(1);
@@ -69,8 +91,7 @@ static int l_graphics_init(lua_State *L) {
   SDL_WM_SetCaption(title, title);
   /* Create, store in registry and return main screen buffer */
   screen = buffer_new(L);
-  screen->buffer = sr_newBufferShared(
-    SDL_GetVideoSurface()->pixels, screenWidth, screenHeight);
+  screen->buffer = sr_newBuffer(screenWidth, screenHeight);
   lua_pushvalue(L, -1);
   screenRef = lua_ref(L, LUA_REGISTRYINDEX);
   /* Set state */
@@ -92,7 +113,7 @@ static int l_graphics_setSize(lua_State *L) {
   /* Reset screen buffer */
   if (screen) {
     sr_Buffer *b = screen->buffer;
-    b->pixels = (void*) SDL_GetVideoSurface()->pixels;
+    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     b->w = width;
     b->h = height;
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
