@@ -116,11 +116,10 @@ int main(int argc, char **argv) {
     }
     ASSERT(SDL_UnlockMutex(luaMutex) == 0);
     if (screen && SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
-    /* Flip -- this blocks on some platforms (OSX) */
-    SDL_Surface *screen = SDL_GetVideoSurface();
-    if (screen) {
-      SDL_Flip(screen);
-    }
+    
+    /* Swap the OpenGL buffers */
+    SDL_GL_SwapBuffers();
+    
     /* Wait for next frame */
     double step = (1. / m_graphics_maxFps);
     double now = SDL_GetTicks() / 1000.;
