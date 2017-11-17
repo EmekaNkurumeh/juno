@@ -6,8 +6,8 @@
  */
 
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef M_BUFFER_H
+#define M_BUFFER_H
 
 #include "luax.h"
 #include "lib/sera/sera.h"

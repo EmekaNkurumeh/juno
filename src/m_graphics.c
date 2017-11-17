@@ -11,10 +11,12 @@
 #include <string.h>
 #include <float.h>
 #include <SDL/SDL.h>
+#include "lib/glew/glew.h"
 #include "lib/sera/sera.h"
 #include "util.h"
 #include "luax.h"
 #include "m_buffer.h"
+#include "m_shader.h"
 
 double m_graphics_maxFps = 60.;
 
@@ -25,7 +27,7 @@ static int screenRef = 0;
 static int fullscreen = 0;
 static int resizable = 0;
 static int borderless = 0;
-Buffer *screen;
+Buffer *m_graphics_screen;
 
 
 static void resetVideoMode(lua_State *L) {
@@ -33,19 +35,19 @@ static void resetVideoMode(lua_State *L) {
   int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
               (resizable  ? SDL_RESIZABLE : 0)  |
               (borderless ? SDL_NOFRAME : 0) | SDL_OPENGL;
-  
+
   const SDL_VideoInfo* info = SDL_GetVideoInfo( );
 
   if(!info) luaL_error(L," video query failed");
-  
+
   int bpp = info->vfmt->BitsPerPixel;
-  
+
   if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == NULL) {
     luaL_error(L, "could not set video mode");
   }
   /* Reset screen buffer */
-  if (screen) {
-    sr_Buffer *b = screen->buffer;
+  if (m_graphics_screen) {
+    sr_Buffer *b = m_graphics_screen->buffer;
     b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     b->w = screenWidth;
     b->h = screenHeight;
@@ -67,31 +69,31 @@ static int l_graphics_init(lua_State *L) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     luaL_error(L, "could not init video");
   }
-  
+
   /* Setup OpenGL */
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  
+
   /* Init SDL video */
   resetVideoMode(L);
-  
+
   /* Init GLEW */
   glewExperimental = GL_TRUE;
   glewInit(); GLuint vertexbuf;
   glGenBuffers(1, &vertexbuf);
-  if (!vertexbuf) CERROR("failed to init GLEW");
+  if (!vertexbuf) luaL_error(L, "failed to init GLEW");
 
   /* OpenGL config */
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
-  
+
   /* Required to get the associated character when a key is pressed. This has
    * to be enabled *after* SDL video is set up */
   SDL_EnableUNICODE(1);
   /* Init window title */
   SDL_WM_SetCaption(title, title);
   /* Create, store in registry and return main screen buffer */
-  screen = buffer_new(L);
-  screen->buffer = sr_newBuffer(screenWidth, screenHeight);
+  m_graphics_screen = buffer_new(L);
+  m_graphics_screen->buffer = sr_newBuffer(screenWidth, screenHeight);
   lua_pushvalue(L, -1);
   screenRef = lua_ref(L, LUA_REGISTRYINDEX);
   /* Set state */
@@ -111,8 +113,8 @@ static int l_graphics_setSize(lua_State *L) {
     luaL_error(L, "could not set resize screen");
   }
   /* Reset screen buffer */
-  if (screen) {
-    sr_Buffer *b = screen->buffer;
+  if (m_graphics_screen) {
+    sr_Buffer *b = m_graphics_screen->buffer;
     b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     b->w = width;
     b->h = height;
@@ -140,6 +142,13 @@ static int l_graphics_setMaxFps(lua_State *L) {
 static int l_graphics_getMaxFps(lua_State *L) {
   lua_pushnumber(L, m_graphics_maxFps);
   return 1;
+}
+
+
+static int l_graphics_setShader(lua_State *L) {
+  // m_graphics_maxFps = luaL_optnumber(L, 1, 60);
+  Shader *shader = luaL_checkudata(L, 1, "Shader");
+  return 0;
 }
 
 

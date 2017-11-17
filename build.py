@@ -9,29 +9,29 @@ COMPILER = "gcc"
 INCLUDE = [ TEMPSRC_DIR ]
 SOURCE = [
   "src/*.c",
-  "src/lib/sera/*.c",
   "src/lib/vec/*.c",
-  "src/lib/stb_vorbis.c"
+  "src/lib/sera/*.c",
+  "src/lib/glew/glew.c",
+  "src/lib/stb_vorbis.c",
 ]
 FLAGS = [ "-Wall", "-Wextra", "--std=gnu99", "-fno-strict-aliasing" ]
 LINK = [ "m" ]
-DEFINE = [ ]
-EXTRA = ""
+DEFINE = [ "GLEW_STATIC" ]
+EXTRA = [  ]
 
 if platform.system() == "Windows":
   OUTPUT += ".exe"
-  LINK += [ "mingw32", "lua51", "SDLmain", "SDL" ]
-  FLAGS += [ "-mwindows" ]
+  LINK += [ "mingw32", "lua51", "SDLmain", "SDL", "opengl32" ]
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 if platform.system() == "Linux":
-  LINK += [ "luajit-5.1", "SDLmain", "SDL" ]
+  LINK += [ "luajit-5.1", "SDLmain", "SDL", "GL" ]
 
 if platform.system() == "Darwin":
   LINK += [ "luajit-5.1" ]
   FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
   FLAGS += [ os.popen("sdl-config --cflags").read().strip() ]
-  EXTRA += os.popen("sdl-config --libs").read().strip()
+  EXTRA += [ os.popen("sdl-config --libs").read().strip(), "-framework OpenGL" ]
   DEFINE += [ "SR_MODE_ARGB" ]
 
 
@@ -53,14 +53,14 @@ def main():
   starttime = time.time()
 
   # Handle args
-  build = "debug" if "debug" in sys.argv else "release"
+  build = "release" if "release" in sys.argv else "debug"
   verbose = "verbose" in sys.argv
 
   # Handle build type
   if build == "debug":
-    FLAGS += [ "-g" ]
+    FLAGS += [ "-g"  ]
   else:
-    FLAGS += [ "-O3" ]
+    FLAGS += [ "-O3", "-mwindows" ]
 
   # Handle "nojit" option -- compile with normal embedded Lua instead
   if "nojit" in sys.argv:
@@ -96,7 +96,7 @@ def main():
       "link"      : " ".join(map(lambda x:"-l" + x, LINK)),
       "define"    : " ".join(map(lambda x:"-D" + x, DEFINE)),
       "flags"     : " ".join(FLAGS),
-      "extra"     : EXTRA,
+      "extra"     : " ".join(EXTRA),
     })
 
   if verbose:
