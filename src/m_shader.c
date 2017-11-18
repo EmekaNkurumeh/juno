@@ -9,14 +9,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_shader.h"
+#include "m_buffer.h"
+#include "luax.h"
 #include "util.h"
 #include "fs.h"
 
 #define CLASS_NAME SHADER_CLASS_NAME
 
-Shader *m_shader_current;
+// #define UniformS(size, type) glUniform##size##type
+// #define UniformV(size, type)
+// https://bitbucket.org/rude/love/src/37e1ced87caf25db7b2a5a8f502af7f3b6eacbd2/src/modules/graphics/opengl/Shader.cpp?at=default&fileviewer=file-view-default
 
-Shader *shader_new(lua_State *L) {
+
+static Shader *shader_new(lua_State *L) {
   Shader *self = lua_newuserdata(L, sizeof(*self));
   luaL_setmetatable(L, CLASS_NAME);
   memset(self, 0, sizeof(*self));
@@ -28,45 +33,58 @@ static GLuint compileShader(lua_State *L, const char *name, const GLchar *src, G
   /* Compile vertex shader */
   const GLuint self = glCreateShader(type);
   glShaderSource(self, 1, &src, NULL);
-  glCompileShader(self); GLint status;
+  glCompileShader(self);
+  GLint status;
   glGetShaderiv(self, GL_COMPILE_STATUS, &status);
-  char buffer[1024];
-  glGetShaderInfoLog(self, 1024, NULL, buffer);
-  if (status != GL_TRUE) luaL_error(L, "%s : %s\n", name, buffer);
+  char buffer[2048];
+  glGetShaderInfoLog(self, 2048, NULL, buffer);
+  if (status != GL_TRUE) luaL_error(L, "\n\n%s\n\n%s : %s\n", src, name, buffer);
   return self;
 }
 
 
-// Shader *shader_fromString(const char *vertex, const char *v, const char *fragment, const char *f) {
-Shader *shader_fromString(lua_State *L) {
-  Shader *self = shader_new(L); GLuint program;
-  // self->vertex = compileShader(v, vertex, GL_VERTEX_SHADER);
-  // self->fragment = compileShader(f, fragment, GL_FRAGMENT_SHADER);
-  // program =  glCreateProgram();
-  // glAttachShader(program, self->vertex);
-  // glAttachShader(program, self->fragment);
-  // glLinkProgram(program);
-  // self->program = program;
-  return self;
-}
+// const GLchar *default_vert =
+// "#version 120\n"
+// "attribute vec4 sr_TexCoord;\n"
+// "attribute vec4 sr_Position;\n"
+// "void main() {\n"
+// "  gl_Position = sr_Position;\n"
+// "  gl_TexCoord[0] = sr_TexCoord;\n"
+// "}\n";
 
+#define makeShader(name, shader) \
+  self->vertex = compileShader(L, "default.vert", default_vert, GL_VERTEX_SHADER); \
+  self->fragment = compileShader(L, name, shader, GL_FRAGMENT_SHADER); \
+  glAttachShader(self->program, self->vertex); \
+  glAttachShader(self->program, self->fragment); \
+  glLinkProgram(self->program)
 
-// Shader *shader_fromFile(const char *vertex, const char *fragment) {
-Shader *shader_fromFile(lua_State *L) {
-  const char *vertex = luaL_checkstring(L, 1);
-  const char *fragment = luaL_checkstring(L, 1);
+static int l_shader_fromString(lua_State *L) {
+  const char *shader = luaL_checkstring(L, 1);
   Shader *self = shader_new(L);
-  // GLchar *v_src = fs_read(vertex, NULL);
-  // GLchar *f_src = fs_read(fragment, NULL);
-  // Shader *self = shader_fromString(v_src, vertex, f_src, fragment);
-  // free(v_src); free(f_src);
-  return self;
+  self->program = glCreateProgram();
+  #include "default_vert.h"
+  makeShader("fragment shader", shader);
+  return 1;
+}
+
+
+static int l_shader_fromFile(lua_State *L) {
+  const char *filename = luaL_checkstring(L, 1);
+  GLchar *source = fs_read(filename, NULL);
+  Shader *self = shader_new(L);
+  self->program =  glCreateProgram();
+  #include "default_vert.h"
+  makeShader(filename, source);
+  free(source);
+  return 1;
 }
 
 
 static int l_shader_gc(lua_State *L) {
   Shader *self = luaL_checkudata(L, 1, CLASS_NAME);
   if (self) {
+    printf("%s has been GC", CLASS_NAME);
     glDetachShader(self->program, self->vertex);
     glDetachShader(self->program, self->fragment);
     glDeleteShader(self->vertex);
@@ -77,20 +95,44 @@ static int l_shader_gc(lua_State *L) {
 }
 
 
-void shader_setAttribute(Shader *self, const char *name, int size, int type, int norm, int s, void *p) {
-  GLint attrib = glGetAttribLocation(self->program, name);
+void shader_setAttribute(Shader *S, const char *name, int size, int type, int norm, int s, void *p) {
+  GLint attrib = glGetAttribLocation(S->program, name);
   glVertexAttribPointer(attrib, size, type, norm, s, p);
   glEnableVertexAttribArray(attrib);
 }
 
 
-// static void set_uniform(GLuint location, int size, int vec, int type) {
-//   if (vec) {
+static int l_shader_getWarnings(lua_State *L) {
+  Shader *self = luaL_checkudata(L, 1, CLASS_NAME);
+  char buffer[2048];
+  glGetShaderInfoLog(self->program, 2048, NULL, buffer);
+  lua_pushfstring(L, "%s", buffer);
+  return 0;
+}
 
-//   } else {
 
-//   }
-// }
+#define splice(x, y) x##y
+
+static int l_shader_uniform(lua_State *L) {
+  Shader *self = luaL_checkudata(L, 1, CLASS_NAME);
+  const char * name = luaL_checkstring(L, 2);
+  // GLint uniform = glGetUniformLocation(self->program, name);
+  // glUniform1f(uniform, time_getDelta());
+
+  switch (lua_type(L, 3)) {
+    case LUA_TNIL: case LUA_TSTRING: case LUA_TFUNCTION:
+    case LUA_TTHREAD: case LUA_TLIGHTUSERDATA:
+      luaL_argerror(L, 3, "unsupported uniform type"); break;
+    case LUA_TNUMBER:
+    case LUA_TBOOLEAN:
+    case LUA_TTABLE: _TRACE("SOL_DEBUG: %s\n", lua_typename(L, lua_type(L, 3))); break;
+    case LUA_TUSERDATA: {
+      // Buffer *buf = luaL_checkudata(L, 3, BUFFER_CLASS_NAME);
+      _TRACE("SOL_DEBUG: %s\n", BUFFER_CLASS_NAME); break;
+    }
+  }
+  return 0;
+}
 
 
 // void shader_setUniform(Shader *S, const char *name, void *data) {
@@ -105,8 +147,8 @@ int luaopen_shader(lua_State *L) {
     { "__gc",           l_shader_gc             },
     { "fromFile",       l_shader_fromFile       },
     { "fromString",     l_shader_fromString     },
-    // { "set",            l_shader_setAttribute   },
-    // { "uniform",           l_shader_sendUniform    },
+    { "getWarnings",    l_shader_getWarnings    },
+    { "uniform",        l_shader_uniform        },
     { NULL, NULL }
   };
   ASSERT( luaL_newmetatable(L, CLASS_NAME) );

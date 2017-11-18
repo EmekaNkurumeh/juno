@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -9,6 +9,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stdio.h>
+
 #define ASSERT(x)\
   do {\
     if (!(x)) {\
@@ -17,6 +19,17 @@
       abort();\
     }\
   } while (0)
+
+#define TRACE() do {\
+  static int _I__ = 0; \
+  fprintf(stdout, "[TRACE]: %s:%d %s(): %d\n", __FILE__, __LINE__, __func__, _I__++); \
+} while (0)
+
+#define _TRACE(...) do { \
+  fprintf(stdout, "[TRACE]: %s:%d %s(): ", __FILE__, __LINE__, __func__); \
+  fprintf(stdout, __VA_ARGS__); \
+  fprintf(stdout, "\n"); \
+} while(0);
 
 #define UNUSED(x)       ((void) (x))
 #define MIN(a, b)       ((b) < (a) ? (b) : (a))

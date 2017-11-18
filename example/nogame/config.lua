@@ -1,3 +1,3 @@
 return {
-  title = "mesh",
+  title = "nogame",
 }

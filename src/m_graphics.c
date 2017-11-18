@@ -36,7 +36,7 @@ static void resetVideoMode(lua_State *L) {
               (resizable  ? SDL_RESIZABLE : 0)  |
               (borderless ? SDL_NOFRAME : 0) | SDL_OPENGL;
 
-  const SDL_VideoInfo* info = SDL_GetVideoInfo( );
+  const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
   if(!info) luaL_error(L," video query failed");
 
@@ -45,12 +45,13 @@ static void resetVideoMode(lua_State *L) {
   if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == NULL) {
     luaL_error(L, "could not set video mode");
   }
+
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
-    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     b->w = screenWidth;
     b->h = screenHeight;
+    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
   }
 }
@@ -63,12 +64,16 @@ static int l_graphics_init(lua_State *L) {
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);
-  if (inited) {
-    luaL_error(L, "graphics are already inited");
-  }
+
+  if (inited) luaL_error(L, "graphics are already inited");
+
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     luaL_error(L, "could not init video");
   }
+
+  /* Fix output rerouting */
+  // freopen( "CON", "w", stdout );
+  // freopen( "CON", "w", stderr );
 
   /* Setup OpenGL */
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -78,9 +83,9 @@ static int l_graphics_init(lua_State *L) {
 
   /* Init GLEW */
   glewExperimental = GL_TRUE;
-  glewInit(); GLuint vertexbuf;
-  glGenBuffers(1, &vertexbuf);
-  if (!vertexbuf) luaL_error(L, "failed to init GLEW");
+  GLenum err = glewInit();
+  if (err != GLEW_OK) luaL_error(L, "failed to init GLEW: %s", glewGetErrorString(err));
+  if (!GLEW_VERSION_2_1) luaL_error(L, "OpenGL version too low");
 
   /* OpenGL config */
   glDisable(GL_DEPTH_TEST);
@@ -105,13 +110,13 @@ static int l_graphics_init(lua_State *L) {
 static int l_graphics_setSize(lua_State *L) {
   int width = luaL_optnumber(L, 1, screenWidth);
   int height = luaL_optnumber(L, 2, screenHeight);
-  /* Reset video mode and set new screen size*/
-  int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
-              (resizable  ? SDL_RESIZABLE : 0)  |
-              (borderless ? SDL_NOFRAME : 0);
-  if (SDL_SetVideoMode(width, height, 32, flags) == NULL) {
-    luaL_error(L, "could not set resize screen");
-  }
+  // /* Reset video mode and set new screen size*/
+  // int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
+  //             (resizable  ? SDL_RESIZABLE : 0)  |
+  //             (borderless ? SDL_NOFRAME : 0);
+  // if (SDL_SetVideoMode(width, height, 32, flags) == NULL) {
+  //   luaL_error(L, "could not set resize screen");
+  // }
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
@@ -146,8 +151,10 @@ static int l_graphics_getMaxFps(lua_State *L) {
 
 
 static int l_graphics_setShader(lua_State *L) {
-  // m_graphics_maxFps = luaL_optnumber(L, 1, 60);
-  Shader *shader = luaL_checkudata(L, 1, "Shader");
+  Shader *shader = luaL_checkudata(L, 1, SHADER_CLASS_NAME);
+  glUseProgram(shader->program);
+  shader_setAttribute(shader, "sr_Position",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+  shader_setAttribute(shader, "sr_TexCoord",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
   return 0;
 }
 
@@ -160,6 +167,7 @@ int luaopen_graphics(lua_State *L) {
     { "getFullscreen",  l_graphics_getFullscreen  },
     { "setMaxFps",      l_graphics_setMaxFps      },
     { "getMaxFps",      l_graphics_getMaxFps      },
+    { "setShader",      l_graphics_setShader      },
     { NULL, NULL }
   };
   luaL_newlib(L, reg);

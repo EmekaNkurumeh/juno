@@ -75,6 +75,7 @@ local eventHandlers = {
     end,
   resize = function(e)
     call(sol.graphics._onEvent, e)
+    call(sol.onResize, e.width, e.height)
     end,
   quit = function(e)
     sol.system.quit()
@@ -298,6 +299,9 @@ sol.fs.mount(path)
 
 sol.graphics.init(config.width, config.height, config.title,
                    config.fullscreen, config.resizable, config.borderless)
+-- Set the default shader
+sol.graphics.setShader()
+sol.graphics.setShader()
 sol.graphics.setMaxFps(config.maxfps)
 sol.graphics.setClearColor(0, 0, 0)
 sol.audio.init(config.samplerate, config.buffersize)

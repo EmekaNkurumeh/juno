@@ -14,7 +14,7 @@ SOURCE = [
   "src/lib/glew/glew.c",
   "src/lib/stb_vorbis.c",
 ]
-FLAGS = [ "-Wall", "-Wextra", "--std=gnu99", "-fno-strict-aliasing" ]
+FLAGS = [ "-Wall", "-Wextra", "--std=gnu99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
 LINK = [ "m" ]
 DEFINE = [ "GLEW_STATIC" ]
 EXTRA = [  ]
@@ -22,6 +22,7 @@ EXTRA = [  ]
 if platform.system() == "Windows":
   OUTPUT += ".exe"
   LINK += [ "mingw32", "lua51", "SDLmain", "SDL", "opengl32" ]
+  FLAGS += [ "-mwindows" ]
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 if platform.system() == "Linux":
@@ -60,7 +61,7 @@ def main():
   if build == "debug":
     FLAGS += [ "-g"  ]
   else:
-    FLAGS += [ "-O3", "-mwindows" ]
+    FLAGS += [ "-O3" ]
 
   # Handle "nojit" option -- compile with normal embedded Lua instead
   if "nojit" in sys.argv:
@@ -71,6 +72,10 @@ def main():
 
   # Make sure there arn't any temp files left over from a previous build
   clearup()
+
+  # Make sure the previous binary is deleted (windows)
+  if os.path.isfile(OUTPUT):
+    os.remove(OUTPUT)
 
   # Create directories
   os.makedirs(TEMPSRC_DIR)

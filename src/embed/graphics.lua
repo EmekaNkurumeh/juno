@@ -43,8 +43,56 @@ function sol.graphics.setClearColor(...)
   sol.graphics._clearColor = { ... }
 end
 
+
 function sol.graphics.getClearColor(...)
   return unpack(sol.graphics._clearColor)
+end
+
+
+local defautShader
+
+function sol.graphics.setDefaultShader(shader)
+  defaultShader = shader
+end
+
+
+-- Overide sol.graphics.setShader function
+local setShader, currentShader = sol.graphics.setShader
+
+sol.graphics.setShader = function(shader)
+  if shader ~= currentShader and shader then
+    currentShader = shader
+    setShader(currentShader)
+    print("using new shader", shader:getWarnings())
+  elseif shader == nil and defaultShader then
+    setShader(defaultShader)
+    print("using default shader", defaultShader:getWarnings())
+  else
+    shader = sol.Shader.fromString [[
+    #version 120
+    uniform sampler2D tex;
+    void main() {
+      //gl_FragColor = texture2D(tex, gl_TexCoord[0].xy);
+      gl_FragColor = vec4(1, 1, 1, 1);
+    }
+    ]]
+    sol.graphics.setDefaultShader(shader)
+    setShader(shader)
+    print("setting default shader", shader:getWarnings())
+  end
+end
+
+
+function sol.graphics.getShader()
+  return currentShader
+end
+
+
+function sol.graphics.withShader(func, shader)
+  local s = currentShader
+  sol.graphics.setShader(shader)
+  func()
+  sol.graphics.setShader(s)
 end
 
 

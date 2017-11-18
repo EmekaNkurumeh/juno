@@ -24,6 +24,7 @@ int luaopen_time(lua_State *L);
 int luaopen_graphics(lua_State *L);
 int luaopen_audio(lua_State *L);
 int luaopen_mouse(lua_State *L);
+int luaopen_shader(lua_State *L);
 int luaopen_buffer(lua_State *L);
 int luaopen_bufferfx(lua_State *L);
 int luaopen_font(lua_State *L);
@@ -55,6 +56,7 @@ int luaopen_sol(lua_State *L) {
     { "audio",    luaopen_audio     },
     { "mouse",    luaopen_mouse     },
     { "bufferfx", luaopen_bufferfx  },
+    { "Shader",   luaopen_shader    },
     { NULL, NULL },
   };
   for (i = 0; mods[i].name; i++) {

@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@
 #endif
 #include "luax.h"
 #include <SDL/SDL.h>
-
+#include <time.h>
 
 static int l_time_getNow(lua_State *L) {
   double t;
@@ -45,6 +45,7 @@ static int l_time_sleep(lua_State *L) {
 
 
 int luaopen_time(lua_State *L) {
+  srand(time(NULL));
   luaL_Reg reg[] = {
     { "getNow",   l_time_getNow   },
     { "getTime",  l_time_getTime  },
