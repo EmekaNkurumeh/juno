@@ -49,10 +49,9 @@ static void resetVideoMode(lua_State *L) {
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
-    b->w = screenWidth;
-    b->h = screenHeight;
-    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
+    b->w = screenWidth; b->h = screenHeight;
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
+    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
   }
 }
 
@@ -120,10 +119,9 @@ static int l_graphics_setSize(lua_State *L) {
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
-    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
-    b->w = width;
-    b->h = height;
+    b->w = width; b->h = height;
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
+    b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
   }
   return 0;
 }
