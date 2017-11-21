@@ -32,26 +32,26 @@ Buffer *m_graphics_screen;
 
 static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
-  int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
-              (resizable  ? SDL_RESIZABLE : 0)  |
-              (borderless ? SDL_NOFRAME : 0) | SDL_OPENGL;
+  int flags = ((fullscreen ? SDL_FULLSCREEN : 0) |
+                (resizable  ? SDL_RESIZABLE : 0)  |
+                (borderless ? SDL_NOFRAME : 0)) | SDL_OPENGL;
 
   const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-  if(!info) luaL_error(L," video query failed");
+  if(!info) luaL_error(L," video query failed: %s", SDL_GetError());
 
   int bpp = info->vfmt->BitsPerPixel;
 
-  if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == NULL) {
-    luaL_error(L, "could not set video mode");
+  if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == 0) {
+    luaL_error(L, "could not set video mode: %s", SDL_GetError());
   }
 
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
     b->w = screenWidth; b->h = screenHeight;
-    sr_setClip(b, sr_rect(0, 0, b->w, b->h));
     b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
+    sr_setClip(b, sr_rect(0, 0, b->w, b->h));
   }
 }
 

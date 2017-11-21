@@ -31,10 +31,10 @@ if platform.system() == "Linux":
 
 
 if platform.system() == "Darwin":
-  LINK += [ "luajit-5.1" ]
-  FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
   FLAGS += [ os.popen("sdl-config --cflags").read().strip() ]
   EXTRA += [ os.popen("sdl-config --libs").read().strip(), "-framework OpenGL" ]
+  LINK += [ "luajit-5.1" ]
+  FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
   # DEFINE += [ "SR_MODE_ARGB" ]
   DEFINE += [ "SR_MODE_RGBA" ]
 
