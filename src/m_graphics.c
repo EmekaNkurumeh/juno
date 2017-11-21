@@ -109,13 +109,6 @@ static int l_graphics_init(lua_State *L) {
 static int l_graphics_setSize(lua_State *L) {
   int width = luaL_optnumber(L, 1, screenWidth);
   int height = luaL_optnumber(L, 2, screenHeight);
-  // /* Reset video mode and set new screen size*/
-  // int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
-  //             (resizable  ? SDL_RESIZABLE : 0)  |
-  //             (borderless ? SDL_NOFRAME : 0);
-  // if (SDL_SetVideoMode(width, height, 32, flags) == NULL) {
-  //   luaL_error(L, "could not set resize screen");
-  // }
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;

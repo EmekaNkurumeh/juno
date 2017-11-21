@@ -125,10 +125,10 @@ static int l_shader_uniform(lua_State *L) {
       luaL_argerror(L, 3, "unsupported uniform type"); break;
     case LUA_TNUMBER:
     case LUA_TBOOLEAN:
-    case LUA_TTABLE: _TRACE("SOL_DEBUG: %s\n", lua_typename(L, lua_type(L, 3))); break;
+    case LUA_TTABLE: TRACE("SOL_DEBUG: %s\n", lua_typename(L, lua_type(L, 3))); break;
     case LUA_TUSERDATA: {
       // Buffer *buf = luaL_checkudata(L, 3, BUFFER_CLASS_NAME);
-      _TRACE("SOL_DEBUG: %s\n", BUFFER_CLASS_NAME); break;
+      TRACE("SOL_DEBUG: %s\n", BUFFER_CLASS_NAME); break;
     }
   }
   return 0;
@@ -144,11 +144,11 @@ static int l_shader_uniform(lua_State *L) {
 
 int luaopen_shader(lua_State *L) {
   luaL_Reg reg[] = {
-    { "__gc",           l_shader_gc             },
-    { "fromFile",       l_shader_fromFile       },
-    { "fromString",     l_shader_fromString     },
-    { "getWarnings",    l_shader_getWarnings    },
-    { "uniform",        l_shader_uniform        },
+    { "__gc",           l_shader_gc          },
+    { "fromFile",       l_shader_fromFile    },
+    { "fromString",     l_shader_fromString  },
+    { "getWarnings",    l_shader_getWarnings },
+    { "uniform",        l_shader_uniform     },
     { NULL, NULL }
   };
   ASSERT( luaL_newmetatable(L, CLASS_NAME) );

@@ -11,7 +11,7 @@ local init = sol.graphics.init
 
 sol.graphics.init = function(...)
   -- Do init
-  local screen = init(...)
+  screen = init(...)
   sol.graphics.screen = screen
   -- Bind the screen buffer's methods to the graphics module
   for k, v in pairs(sol.Buffer) do
@@ -93,6 +93,37 @@ function sol.graphics.withShader(func, shader)
   sol.graphics.setShader(shader)
   func()
   sol.graphics.setShader(s)
+end
+
+
+function sol.graphics.setBuffer(buf)
+  if buf then
+    for k, v in pairs(sol.graphics) do
+      if sol.graphics[k] then
+        sol.graphics[k] = function(...)
+          return v(buf, ...)
+        end
+      end
+    end
+  else
+    if buf ~= sol.graphics.buffer then
+      for k, v in pairs(sol.graphics) do
+        if sol.graphics[k] then
+          sol.graphics[k] = function(...)
+            return v(sol.graphics.screen, ...)
+          end
+        end
+      end
+    end
+  end
+end
+
+
+
+function sol.graphics.withBuffer(func, buf)
+  sol.graphics.setBuffer(buf)
+  func()
+  sol.graphics.setBuffer()
 end
 
 

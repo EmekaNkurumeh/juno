@@ -14,7 +14,7 @@ SOURCE = [
   "src/lib/glew/glew.c",
   "src/lib/stb_vorbis.c",
 ]
-FLAGS = [ "-Wall", "-Wextra", "--std=gnu99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
+FLAGS = [ "-Wall", "-Wextra", "--std=c99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
 LINK = [ "m" ]
 DEFINE = [ "GLEW_STATIC" ]
 EXTRA = [  ]
@@ -27,13 +27,16 @@ if platform.system() == "Windows":
 
 if platform.system() == "Linux":
   LINK += [ "luajit-5.1", "SDLmain", "SDL", "GL" ]
+  DEFINE += [ "SR_MODE_RGBA" ]
+
 
 if platform.system() == "Darwin":
   LINK += [ "luajit-5.1" ]
   FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
   FLAGS += [ os.popen("sdl-config --cflags").read().strip() ]
   EXTRA += [ os.popen("sdl-config --libs").read().strip(), "-framework OpenGL" ]
-  DEFINE += [ "SR_MODE_ARGB" ]
+  # DEFINE += [ "SR_MODE_ARGB" ]
+  DEFINE += [ "SR_MODE_RGBA" ]
 
 
 def fmt(fmt, dic):

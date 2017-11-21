@@ -20,12 +20,11 @@
     }\
   } while (0)
 
-#define TRACE() do {\
-  static int _I__ = 0; \
-  fprintf(stdout, "[TRACE]: %s:%d %s(): %d\n", __FILE__, __LINE__, __func__, _I__++); \
+#define DEBUG() do {\
+  fprintf(stdout, "[TRACE]: %s:%d %s(): %d\n", __FILE__, __LINE__, __func__); \
 } while (0)
 
-#define _TRACE(...) do { \
+#define TRACE(...) do { \
   fprintf(stdout, "[TRACE]: %s:%d %s(): ", __FILE__, __LINE__, __func__); \
   fprintf(stdout, __VA_ARGS__); \
   fprintf(stdout, "\n"); \

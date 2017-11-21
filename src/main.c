@@ -20,7 +20,7 @@
 
 extern double m_graphics_maxFps;
 extern Buffer* m_graphics_screen;
-GLuint m_graphics_vao, m_graphics_vbo, m_graphics_ebo, m_graphics_tex;
+static GLuint m_graphics_vao, m_graphics_vbo, m_graphics_ebo, m_graphics_tex;
 
 static lua_State *L;
 static SDL_mutex *luaMutex;
@@ -103,54 +103,55 @@ int main(int argc, char **argv) {
   }
   ASSERT(SDL_UnlockMutex(luaMutex) == 0);
 
-  // Create Vertex Array Object
-  glGenVertexArrays(1, &m_graphics_vao);
-  glBindVertexArray(m_graphics_vao);
+ // Create Vertex Array Object
+ glGenVertexArrays(1, &m_graphics_vao);
+ glBindVertexArray(m_graphics_vao);
 
-  // Create a Vertex Buffer Object and copy the vertex data to it
-  glGenBuffers(1, &m_graphics_vbo);
+ // Create a Vertex Buffer Object and copy the vertex data to it
+ glGenBuffers(1, &m_graphics_vbo);
 
-  float vertices[] = {
-  //  Position                Texcoords
-  -1.0f,  1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 1.0f, 1.0f, // Top-left
-   1.0f,  1.0f, 1.0f, 1.0f,   1.0f, 0.0f, 1.0f, 1.0f, // Top-right
-   1.0f, -1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-  -1.0f, -1.0f, 1.0f, 1.0f,   0.0f, 1.0f, 1.0f, 1.0f, // Bottom-left
-  };
+ float vertices[] = {
+ //  Position               Texcoords
+ -1.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f, 1.0f, // Top-left
+  1.0f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // Top-right
+  1.0f, -1.0f, 1.0f, 1.0f,  1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
+ -1.0f, -1.0f, 1.0f, 1.0f,  0.0f, 1.0f, 1.0f, 1.0f, // Bottom-left
+ };
 
-  glBindBuffer(GL_ARRAY_BUFFER, m_graphics_vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+ glBindBuffer(GL_ARRAY_BUFFER, m_graphics_vbo);
+ glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glGenBuffers(1, &m_graphics_ebo);
+ glGenBuffers(1, &m_graphics_ebo);
 
-  GLuint elements[] = {
-    0, 1, 2,
-    2, 3, 0,
-  };
+ GLuint elements[] = {
+   0, 1, 2,
+   2, 3, 0,
+ };
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_graphics_ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
-  /* Create a texute to write our image data to */
-  glGenTextures(1, &m_graphics_tex);
-  glBindTexture(GL_TEXTURE_2D, m_graphics_tex);
+ glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_graphics_ebo);
+ glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
-  /* Configure the texture's render settings */
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ /* Create a texute to write our image data to */
+ glGenTextures(1, &m_graphics_tex);
+ glBindTexture(GL_TEXTURE_2D, m_graphics_tex);
+
+ /* Configure the texture's render settings */
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   sr_Buffer *test = sr_newBuffer(512, 512);
-  sr_floodFill(test, sr_color(255, 255, 255), 0, 0);
+  sr_floodFill(test, sr_color(255, 7, 255), 0, 0);
 
   for (i = 0; i < 8; i++) {
     int x = rand() % (test->w + 1);
     int y = rand() % (test->h + 1);
     sr_Pixel p = sr_getPixel(test, x, y);
-    _TRACE("SAMPLE %d: %d %d %d %d\n", i, p.rgba.r, p.rgba.b, p.rgba.g, p.rgba.a)
+    TRACE("SAMPLE %d: (%d, %d) -> %d %d %d %d\n", x, y, i, p.rgba.r, p.rgba.b, p.rgba.g, p.rgba.a)
   }
 
   /* Do main loop */
@@ -161,8 +162,8 @@ int main(int argc, char **argv) {
     // if (screen && SDL_MUSTLOCK(screen)) SDL_LockSurface(screen);
 
     /* Clear OpenGL buffer */
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    // glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     ASSERT(SDL_LockMutex(luaMutex) == 0);
     lua_getglobal(L, "sol");
@@ -178,18 +179,17 @@ int main(int argc, char **argv) {
       }
       lua_pop(L, 1);
     }
-    ASSERT(SDL_UnlockMutex(luaMutex) == 0);
+    // ASSERT(SDL_UnlockMutex(luaMutex) == 0);
     // if (screen && SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
 
     sr_Buffer *b = test;
-    // sr_Buffer *b = m_graphics_screen->buffer;
-    // sr_drawRect(b, sr_color(46, 76, 24), 0, 0, 200, 200);
 
     /* Generate an image from Buffer data */
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->w, b->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, b->pixels);
 
     /* Draw the texture to OpenGL */
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawArrays(GL_TRIANGLES, 6, 0);
 
     /* Swap the OpenGL buffers */
     SDL_GL_SwapBuffers();
