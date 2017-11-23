@@ -39,59 +39,6 @@ static void shutdown(void) {
 
 int luaopen_sol(lua_State *L);
 
-
-static Shader *__shader_new(lua_State *L) {
-  Shader *self = lua_newuserdata(L, sizeof(*self));
-  luaL_setmetatable(L, SHADER_CLASS_NAME);
-  memset(self, 0, sizeof(*self));
-  return self;
-}
-
-
-static GLuint __compileShader(const char *name, const GLchar *src, GLint type) {
-  /* Compile vertex shader */
-  const GLuint self = glCreateShader(type);
-  glShaderSource(self, 1, &src, NULL);
-  glCompileShader(self); GLint status;
-  glGetShaderiv(self, GL_COMPILE_STATUS, &status);
-  char buffer[1024];
-  glGetShaderInfoLog(self, 1024, NULL, buffer);
-  if (status != GL_TRUE) luaL_error(L, "%s : %s\n", name, buffer);
-  return self;
-}
-
-
-Shader *__shader_fromString(lua_State *L, const char *vertex, const char *v, const char *fragment, const char *f) {
-  Shader *self = __shader_new(L); GLuint program;
-  self->vertex = __compileShader(v, vertex, GL_VERTEX_SHADER);
-  self->fragment = __compileShader(f, fragment, GL_FRAGMENT_SHADER);
-  program =  glCreateProgram();
-  glAttachShader(program, self->vertex);
-  glAttachShader(program, self->fragment);
-  glLinkProgram(program);
-  self->program = program;
-  return self;
-}
-
-
-Shader *__shader_fromFile(lua_State *L, const char *vertex, const char *fragment) {
-  GLchar *v_src = fs_read(vertex, NULL);
-  GLchar *f_src = fs_read(fragment, NULL);
-  Shader *self = __shader_fromString(L, v_src, vertex, f_src, fragment);
-  free(v_src); free(f_src);
-  return self;
-}
-
-
-void __shader_setAttribute(Shader *self, const char *name, int size, int type, int norm, int s, void *p) {
-  if (self) {
-    GLint attrib = glGetAttribLocation(self->program, name);
-    glVertexAttribPointer(attrib, size, type, norm, s, p);
-    glEnableVertexAttribArray(attrib);
-  }
-}
-
-
 int main(int argc, char **argv) {
   atexit(shutdown);
 
@@ -198,13 +145,6 @@ int main(int argc, char **argv) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  // #include "default_vert.h"
-  // #include "default_frag.h"
-  // Shader *__shader = __shader_fromString(L, default_vert, "vertex", default_frag, "fragment");
-  // glUseProgram(__shader->program);
-  // __shader_setAttribute(__shader, "sr_Position",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-  // __shader_setAttribute(__shader, "sr_TexCoord",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
 
   /* Do main loop */
   double last = 0;

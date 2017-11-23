@@ -33,8 +33,8 @@ sol.graphics.init = function(...)
     b = b or (c and c[3])
     clear(r, g, b, 1)
   end
-  -- Set the default shader
-  sol.graphics.setShader()
+  -- Initialise the Shader module
+  sol.Shader.init()
   -- Return main screen buffer
   return screen
 end
@@ -50,38 +50,38 @@ function sol.graphics.getClearColor(...)
 end
 
 
-local currentBuffer = sol.graphics.screen
-
-function sol.graphics.setBuffer(buf)
-  local buf = buf or sol.graphics.screen
-  if buf ~= currentBuffer then
-    for k, v in pairs(sol.graphics) do
-      print(k, buf[k])
-      if type(v) == "function" then
-        sol.graphics[k] = function(...)
-          if not buf[k] then
-            return v(...)
-          else
-            return buf[k](buf, ...)
-          end
-        end
-      end
-    end
-    currentBuffer = buf
-  end
-end
-
-
-function sol.graphics.withBuffer(func, buf)
-  sol.graphics.setBuffer(buf)
-  func()
-  sol.graphics.setBuffer()
-end
+-- local currentBuffer = sol.graphics.screen
+--
+-- function sol.graphics.setBuffer(buf)
+--   local buf = buf or sol.graphics.screen
+--   if buf ~= currentBuffer then
+--     for k, v in pairs(sol.graphics) do
+--       print(k, buf[k])
+--       if type(v) == "function" then
+--         sol.graphics[k] = function(...)
+--           if not buf[k] then
+--             return v(...)
+--           else
+--             return buf[k](buf, ...)
+--           end
+--         end
+--       end
+--     end
+--     currentBuffer = buf
+--   end
+-- end
+--
+--
+-- function sol.graphics.withBuffer(func, buf)
+--   sol.graphics.setBuffer(buf)
+--   func()
+--   sol.graphics.setBuffer()
+-- end
 
 
 function sol.graphics._onEvent(e)
   if e.type == "resize" then
     sol.graphics.setSize(e.width, e.height)
-    -- sol.graphics.setShader(sol.Shader.current)
+    sol.graphics.setShader(sol.Shader.current)
   end
 end

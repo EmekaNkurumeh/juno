@@ -109,7 +109,7 @@ static int l_graphics_init(lua_State *L) {
 static int l_graphics_setSize(lua_State *L) {
   int width = luaL_optnumber(L, 1, screenWidth);
   int height = luaL_optnumber(L, 2, screenHeight);
-  TRACE("\nΔ: %d\nΔ: %d\n", screenWidth - width, screenHeight - height);
+  // TRACE("\nΔ: %d\nΔ: %d\n", screenWidth - width, screenHeight - height);
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;

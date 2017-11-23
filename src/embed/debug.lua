@@ -24,6 +24,9 @@ local size, cursor = 0, 0
 -- Override print
 local _print = print
 print = function(...)
+  local info = debug.getinfo(2, "Sl")
+  io.write(info.short_src .. ":" .. info.currentline .. " ")
+  io.flush()
   _print(...)
   -- Convert all arguments to string and store in table
   local t = {}
@@ -233,6 +236,7 @@ end
 
 function sol.debug._draw()
   draw()
+  -- sol.graphics.withShader(draw)
 end
 
 
