@@ -54,7 +54,7 @@ end
 
 function sol.onDraw()
   -- Draw particles
-	sol.graphics.setBlend("add")
+	sol.graphics.setBlend("b")
   for i = particle_count, 1, -1 do
   	local p = particles[i]
     sol.graphics.drawCircle(p.x, p.y, 4)

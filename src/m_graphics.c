@@ -59,7 +59,7 @@ static void resetVideoMode(lua_State *L) {
 static int l_graphics_init(lua_State *L) {
   screenWidth = luaL_checkint(L, 1);
   screenHeight = luaL_checkint(L, 2);
-  const char *title = luaL_optstring(L, 3, "Sol");
+  const char *title = luaL_optstring(L, 3, "sol");
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);
@@ -109,12 +109,13 @@ static int l_graphics_init(lua_State *L) {
 static int l_graphics_setSize(lua_State *L) {
   int width = luaL_optnumber(L, 1, screenWidth);
   int height = luaL_optnumber(L, 2, screenHeight);
+  TRACE("\nΔ: %d\nΔ: %d\n", screenWidth - width, screenHeight - height);
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
     b->w = width; b->h = height;
-    sr_setClip(b, sr_rect(0, 0, b->w, b->h));
     b->pixels = realloc(b->pixels, b->w * b->h * sizeof(*b->pixels));
+    sr_setClip(b, sr_rect(0, 0, b->w, b->h));
   }
   return 0;
 }
@@ -143,9 +144,11 @@ static int l_graphics_getMaxFps(lua_State *L) {
 
 static int l_graphics_setShader(lua_State *L) {
   Shader *shader = luaL_checkudata(L, 1, SHADER_CLASS_NAME);
-  glUseProgram(shader->program);
-  shader_setAttribute(shader, "sr_Position",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-  shader_setAttribute(shader, "sr_TexCoord",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+  if (shader) {
+    glUseProgram(shader->program);
+    shader_setAttribute(shader, "sr_Position",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+    shader_setAttribute(shader, "sr_TexCoord",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+  }
   return 0;
 }
 

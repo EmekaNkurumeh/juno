@@ -16,6 +16,7 @@
 #include "luax.h"
 #include "m_source.h"
 #include "m_buffer.h"
+#include "m_shader.h"
 #include "fs.h"
 
 extern double m_graphics_maxFps;
@@ -37,6 +38,58 @@ static void shutdown(void) {
 }
 
 int luaopen_sol(lua_State *L);
+
+
+static Shader *__shader_new(lua_State *L) {
+  Shader *self = lua_newuserdata(L, sizeof(*self));
+  luaL_setmetatable(L, SHADER_CLASS_NAME);
+  memset(self, 0, sizeof(*self));
+  return self;
+}
+
+
+static GLuint __compileShader(const char *name, const GLchar *src, GLint type) {
+  /* Compile vertex shader */
+  const GLuint self = glCreateShader(type);
+  glShaderSource(self, 1, &src, NULL);
+  glCompileShader(self); GLint status;
+  glGetShaderiv(self, GL_COMPILE_STATUS, &status);
+  char buffer[1024];
+  glGetShaderInfoLog(self, 1024, NULL, buffer);
+  if (status != GL_TRUE) luaL_error(L, "%s : %s\n", name, buffer);
+  return self;
+}
+
+
+Shader *__shader_fromString(lua_State *L, const char *vertex, const char *v, const char *fragment, const char *f) {
+  Shader *self = __shader_new(L); GLuint program;
+  self->vertex = __compileShader(v, vertex, GL_VERTEX_SHADER);
+  self->fragment = __compileShader(f, fragment, GL_FRAGMENT_SHADER);
+  program =  glCreateProgram();
+  glAttachShader(program, self->vertex);
+  glAttachShader(program, self->fragment);
+  glLinkProgram(program);
+  self->program = program;
+  return self;
+}
+
+
+Shader *__shader_fromFile(lua_State *L, const char *vertex, const char *fragment) {
+  GLchar *v_src = fs_read(vertex, NULL);
+  GLchar *f_src = fs_read(fragment, NULL);
+  Shader *self = __shader_fromString(L, v_src, vertex, f_src, fragment);
+  free(v_src); free(f_src);
+  return self;
+}
+
+
+void __shader_setAttribute(Shader *self, const char *name, int size, int type, int norm, int s, void *p) {
+  if (self) {
+    GLint attrib = glGetAttribLocation(self->program, name);
+    glVertexAttribPointer(attrib, size, type, norm, s, p);
+    glEnableVertexAttribArray(attrib);
+  }
+}
 
 
 int main(int argc, char **argv) {
@@ -70,6 +123,7 @@ int main(int argc, char **argv) {
   /* Init embedded scripts -- these should be ordered in the array in the order
    * we want them loaded; init.lua should always be last since it depends on
    * all the other modules */
+  #include "shader_lua.h"
   #include "buffer_lua.h"
   #include "time_lua.h"
   #include "graphics_lua.h"
@@ -82,6 +136,7 @@ int main(int argc, char **argv) {
   struct {
     const char *name, *data; int size;
   } items[] = {
+    { "shader.lua",     shader_lua,     sizeof(shader_lua)    },
     { "buffer.lua",     buffer_lua,     sizeof(buffer_lua)    },
     { "time.lua",       time_lua,       sizeof(time_lua)      },
     { "graphics.lua",   graphics_lua,   sizeof(graphics_lua)  },
@@ -106,15 +161,11 @@ int main(int argc, char **argv) {
   ASSERT(SDL_UnlockMutex(luaMutex) == 0);
 
   // Create a Vertex Array Object
-  TRACE("%d\n", glGetError());
   glGenVertexArrays(1, &vao);
-  TRACE("%d\n", glGetError());
   glBindVertexArray(vao);
-  TRACE("%d\n", glGetError());
 
   // Create a Vertex Buffer Object and copy the vertex data to it
   glGenBuffers(1, &vbo);
-  TRACE("%d\n", glGetError());
 
   float vertices[] = {
   //  Position                Texcoords
@@ -125,9 +176,7 @@ int main(int argc, char **argv) {
   };
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  TRACE("%d\n", glGetError());
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  TRACE("%d\n", glGetError());
 
   GLuint elements[] = {
     0, 1, 2,
@@ -135,41 +184,27 @@ int main(int argc, char **argv) {
   };
 
   glGenBuffers(1, &ebo);
-  TRACE("%d\n", glGetError());
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  TRACE("%d\n", glGetError());
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-  TRACE("%d\n", glGetError());
 
   /* Create a texute to write our image data to */
   glGenTextures(1, &tex);
-  TRACE("%d\n", glGetError());
   glBindTexture(GL_TEXTURE_2D, tex);
-  TRACE("%d\n", glGetError());
 
   /* Configure the texture's render settings */
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  TRACE("%d\n", glGetError());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  TRACE("%d\n", glGetError());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-  TRACE("%d\n", glGetError());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-  TRACE("%d\n", glGetError());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  TRACE("%d\n", glGetError());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  TRACE("%d\n", glGetError());
 
-  sr_Buffer *test = sr_newBuffer(m_graphics_screen->buffer->w, m_graphics_screen->buffer->h);
-  sr_floodFill(test, sr_color(255, 7, 255), 0, 0);
-
-  for (int i = 0; i < 8; i++) {
-    int x = rand() % (test->w + 1);
-    int y = rand() % (test->h + 1);
-    sr_Pixel p = sr_getPixel(test, x, y);
-    TRACE("SAMPLE %d: (%d, %d) -> %d %d %d %d\n", x, y, i, p.rgba.r, p.rgba.b, p.rgba.g, p.rgba.a)
-  }
+  // #include "default_vert.h"
+  // #include "default_frag.h"
+  // Shader *__shader = __shader_fromString(L, default_vert, "vertex", default_frag, "fragment");
+  // glUseProgram(__shader->program);
+  // __shader_setAttribute(__shader, "sr_Position",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+  // __shader_setAttribute(__shader, "sr_TexCoord",  4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
 
   /* Do main loop */
   double last = 0;
@@ -199,19 +234,16 @@ int main(int argc, char **argv) {
     ASSERT(SDL_UnlockMutex(luaMutex) == 0);
     if (screen && SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
 
-    sr_Buffer *b = test;
+    sr_Buffer *b = m_graphics_screen->buffer;
 
     /* Generate an image from Buffer data */
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->w, b->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, b->pixels);
-    TRACE("%d\n", glGetError());
 
     /* Draw the texture to OpenGL */
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-    TRACE("%d\n", glGetError());
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     /* Swap the OpenGL buffers */
     SDL_GL_SwapBuffers();
-    TRACE("%d\n", glGetError());
 
     /* Wait for next frame */
     double step = (1. / m_graphics_maxFps);

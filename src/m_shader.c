@@ -43,15 +43,6 @@ static GLuint compileShader(lua_State *L, const char *name, const GLchar *src, G
 }
 
 
-// const GLchar *default_vert =
-// "#version 120\n"
-// "attribute vec4 sr_TexCoord;\n"
-// "attribute vec4 sr_Position;\n"
-// "void main() {\n"
-// "  gl_Position = sr_Position;\n"
-// "  gl_TexCoord[0] = sr_TexCoord;\n"
-// "}\n";
-
 #define makeShader(name, shader) \
   self->vertex = compileShader(L, "default.vert", default_vert, GL_VERTEX_SHADER); \
   self->fragment = compileShader(L, name, shader, GL_FRAGMENT_SHADER); \
@@ -72,6 +63,7 @@ static int l_shader_fromString(lua_State *L) {
 static int l_shader_fromFile(lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
   GLchar *source = fs_read(filename, NULL);
+  TRACE("\n%s\n%s\n", filename, source);
   Shader *self = shader_new(L);
   self->program =  glCreateProgram();
   #include "default_vert.h"
@@ -84,7 +76,6 @@ static int l_shader_fromFile(lua_State *L) {
 static int l_shader_gc(lua_State *L) {
   Shader *self = luaL_checkudata(L, 1, CLASS_NAME);
   if (self) {
-    printf("%s has been GC", CLASS_NAME);
     glDetachShader(self->program, self->vertex);
     glDetachShader(self->program, self->fragment);
     glDeleteShader(self->vertex);

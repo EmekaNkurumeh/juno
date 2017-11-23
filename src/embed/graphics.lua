@@ -5,7 +5,6 @@
 -- under the terms of the MIT license. See LICENSE for details.
 --
 
-
 -- Override sol.graphics.init function
 local init = sol.graphics.init
 
@@ -34,6 +33,8 @@ sol.graphics.init = function(...)
     b = b or (c and c[3])
     clear(r, g, b, 1)
   end
+  -- Set the default shader
+  sol.graphics.setShader()
   -- Return main screen buffer
   return screen
 end
@@ -49,75 +50,26 @@ function sol.graphics.getClearColor(...)
 end
 
 
-local defautShader
-
-function sol.graphics.setDefaultShader(shader)
-  defaultShader = shader
-end
-
-
--- Overide sol.graphics.setShader function
-local setShader, currentShader = sol.graphics.setShader
-
-sol.graphics.setShader = function(shader)
-  if shader ~= currentShader and shader then
-    currentShader = shader
-    setShader(currentShader)
-    print("using new shader", shader:getWarnings())
-  elseif shader == nil and defaultShader then
-    setShader(defaultShader)
-    print("using default shader", defaultShader:getWarnings())
-  else
-    shader = sol.Shader.fromString [[
-    #version 120
-    uniform sampler2D tex;
-    void main() {
-      //gl_FragColor = texture2D(tex, gl_TexCoord[0].xy);
-      gl_FragColor = vec4(1, 1, 1, 1);
-    }
-    ]]
-    sol.graphics.setDefaultShader(shader)
-    setShader(shader)
-    print("setting default shader", shader:getWarnings())
-  end
-end
-
-
-function sol.graphics.getShader()
-  return currentShader
-end
-
-
-function sol.graphics.withShader(func, shader)
-  local s = currentShader
-  sol.graphics.setShader(shader)
-  func()
-  sol.graphics.setShader(s)
-end
-
+local currentBuffer = sol.graphics.screen
 
 function sol.graphics.setBuffer(buf)
-  if buf then
+  local buf = buf or sol.graphics.screen
+  if buf ~= currentBuffer then
     for k, v in pairs(sol.graphics) do
-      if sol.graphics[k] then
+      print(k, buf[k])
+      if type(v) == "function" then
         sol.graphics[k] = function(...)
-          return v(buf, ...)
-        end
-      end
-    end
-  else
-    if buf ~= sol.graphics.buffer then
-      for k, v in pairs(sol.graphics) do
-        if sol.graphics[k] then
-          sol.graphics[k] = function(...)
-            return v(sol.graphics.screen, ...)
+          if not buf[k] then
+            return v(...)
+          else
+            return buf[k](buf, ...)
           end
         end
       end
     end
+    currentBuffer = buf
   end
 end
-
 
 
 function sol.graphics.withBuffer(func, buf)
@@ -130,5 +82,6 @@ end
 function sol.graphics._onEvent(e)
   if e.type == "resize" then
     sol.graphics.setSize(e.width, e.height)
+    -- sol.graphics.setShader(sol.Shader.current)
   end
 end

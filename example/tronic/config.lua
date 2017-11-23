@@ -9,4 +9,5 @@ return {
   title   = "Tronic",
   width   = G.width * G.scale,
   height  = G.height * G.scale,
+  resizable = true,
 }

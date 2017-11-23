@@ -20,10 +20,11 @@ DEFINE = [ "GLEW_STATIC" ]
 EXTRA = [  ]
 
 if platform.system() == "Windows":
+  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
   OUTPUT += ".exe"
   LINK += [ "mingw32", "lua51", "SDLmain", "SDL", "opengl32" ]
   FLAGS += [ "-mwindows" ]
-  sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+  DEFINE += [ "SR_MODE_RGBA" ]
 
 if platform.system() == "Linux":
   LINK += [ "luajit-5.1", "SDLmain", "SDL", "GL" ]

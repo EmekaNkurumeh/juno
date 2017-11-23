@@ -43,6 +43,7 @@ int luaopen_sol(lua_State *L) {
   int i;
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
     /* Objects */
+    { "Shader",   luaopen_shader    },
     { "Font",     luaopen_font      },
     { "Buffer",   luaopen_buffer    },
     { "Source",   luaopen_source    },
@@ -56,7 +57,6 @@ int luaopen_sol(lua_State *L) {
     { "audio",    luaopen_audio     },
     { "mouse",    luaopen_mouse     },
     { "bufferfx", luaopen_bufferfx  },
-    { "Shader",   luaopen_shader    },
     { NULL, NULL },
   };
   for (i = 0; mods[i].name; i++) {
