@@ -97,6 +97,8 @@ end
 
 function sol._onStep()
   xpcall(onStepMain, onError)
+  collectgarbage()
+  collectgarbage()
 end
 
 function sol._onAudio(...)

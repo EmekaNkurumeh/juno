@@ -125,9 +125,13 @@ int main(int argc, char **argv) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  // GLuint elements[] = {
+  //   0, 1, 2,
+  //   2, 3, 0,
+  // };
+
   GLuint elements[] = {
-    0, 1, 2,
-    2, 3, 0,
+    0, 1, 2, 3,
   };
 
   glGenBuffers(1, &ebo);
@@ -180,7 +184,8 @@ int main(int argc, char **argv) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->w, b->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, b->pixels);
 
     /* Draw the texture to OpenGL */
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, 0);
 
     /* Swap the OpenGL buffers */
     SDL_GL_SwapBuffers();
