@@ -33,8 +33,6 @@ sol.graphics.init = function(...)
     b = b or (c and c[3])
     clear(r, g, b, 1)
   end
-  -- Initialise the Shader module
-  sol.Shader.init()
   -- Return main screen buffer
   return screen
 end
@@ -82,6 +80,5 @@ end
 function sol.graphics._onEvent(e)
   if e.type == "resize" then
     sol.graphics.setSize(e.width, e.height)
-    sol.graphics.setShader(sol.Shader.current)
   end
 end

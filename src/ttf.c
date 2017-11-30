@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright (c) 2015 rxi
  *
  * This library is free software; you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ void ttf_ptsize(ttf_Font *self, float ptsize) {
   stbtt_GetFontVMetrics(&self->font, &ascent, &descent, &lineGap);
   self->baseline = ascent * self->scale + 1;
 }
-  
+
 
 int ttf_height(ttf_Font *self) {
   int ascent, descent, lineGap;
@@ -95,7 +95,7 @@ static const char *ttf_utf8toCodepoint(const char *p, unsigned *res) {
     x |= (*p & 0x3f) << shift;
   } while (shift);
   *res = x;
-  return p + 1; 
+  return p + 1;
 }
 
 
@@ -162,4 +162,3 @@ void *ttf_render(ttf_Font *self, const char *str, int *w, int *h) {
   }
   return pixels;
 }
-

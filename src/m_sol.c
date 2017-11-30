@@ -24,7 +24,6 @@ int luaopen_time(lua_State *L);
 int luaopen_graphics(lua_State *L);
 int luaopen_audio(lua_State *L);
 int luaopen_mouse(lua_State *L);
-int luaopen_shader(lua_State *L);
 int luaopen_buffer(lua_State *L);
 int luaopen_bufferfx(lua_State *L);
 int luaopen_font(lua_State *L);
@@ -43,7 +42,6 @@ int luaopen_sol(lua_State *L) {
   int i;
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
     /* Objects */
-    { "Shader",   luaopen_shader    },
     { "Font",     luaopen_font      },
     { "Buffer",   luaopen_buffer    },
     { "Source",   luaopen_source    },

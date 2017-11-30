@@ -236,7 +236,6 @@ end
 
 function sol.debug._draw()
   draw()
-  -- sol.graphics.withShader(draw)
 end
 
 

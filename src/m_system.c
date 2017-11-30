@@ -7,7 +7,6 @@
 
 
 #include <SDL/SDL.h>
-#include "lib/glew/glew.h"
 #include "util.h"
 #include "luax.h"
 
@@ -182,10 +181,6 @@ static int l_system_info(lua_State *L) {
 #else
     lua_pushfstring(L, "%s/.local/share", getenv("HOME"));
 #endif
-} else if (!strcmp(str, "opengl")) {
-    lua_pushfstring(L, "%s", glGetString(GL_VERSION));
-} else if (!strcmp(str, "glsl")) {
-    lua_pushfstring(L, "%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
 } else {
     luaL_argerror(L, 1, "invalid string");
   }

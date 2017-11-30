@@ -11,12 +11,12 @@ SOURCE = [
   "src/*.c",
   "src/lib/vec/*.c",
   "src/lib/sera/*.c",
-  "src/lib/glew/glew.c",
   "src/lib/stb_vorbis.c",
 ]
 FLAGS = [ "-Wall", "-Wextra", "--std=c99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
 LINK = [ "m" ]
-DEFINE = [ "GLEW_STATIC" ]
+LINKER = [  ]
+DEFINE = [  ]
 EXTRA = [  ]
 
 if platform.system() == "Windows":
@@ -24,11 +24,11 @@ if platform.system() == "Windows":
   OUTPUT += ".exe"
   LINK += [ "mingw32", "lua51", "SDLmain", "SDL", "opengl32" ]
   FLAGS += [ "-mwindows" ]
-  DEFINE += [ "SR_MODE_RGBA" ]
+  
 
 if platform.system() == "Linux":
   LINK += [ "luajit-5.1", "SDLmain", "SDL", "GL" ]
-  DEFINE += [ "SR_MODE_RGBA" ]
+  DEFINE += [ "SR_MODE_ABGR" ]
 
 
 if platform.system() == "Darwin":
@@ -36,8 +36,7 @@ if platform.system() == "Darwin":
   EXTRA += [ os.popen("sdl-config --libs").read().strip(), "-framework OpenGL" ]
   LINK += [ "luajit-5.1" ]
   FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
-  # DEFINE += [ "SR_MODE_ARGB" ]
-  DEFINE += [ "SR_MODE_RGBA" ]
+  DEFINE += [ "SR_MODE_ARGB" ]
 
 
 def fmt(fmt, dic):
@@ -95,13 +94,14 @@ def main():
 
   # Build
   cmd = fmt(
-    "{compiler} -o {output} {flags} {source} {include} {link} {define} " +
+    "{compiler} -o {output} {flags} {source} {include} {linker} {link} {define} " +
     "{extra}",
     {
       "compiler"  : COMPILER,
       "output"    : OUTPUT,
       "source"    : " ".join(SOURCE),
       "include"   : " ".join(map(lambda x:"-I" + x, INCLUDE)),
+      "linker"    : " ".join(map(lambda x:"-L" + x, LINKER)),
       "link"      : " ".join(map(lambda x:"-l" + x, LINK)),
       "define"    : " ".join(map(lambda x:"-D" + x, DEFINE)),
       "flags"     : " ".join(FLAGS),
