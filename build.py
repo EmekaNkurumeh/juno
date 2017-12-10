@@ -51,7 +51,7 @@ def clearup():
 
 
 def main():
-  global FLAGS, SOURCE, LINK
+  global FLAGS, SOURCE, LINK, DEFINE
 
   print "initing..."
   starttime = time.time()
@@ -65,6 +65,7 @@ def main():
     FLAGS += [ "-g"  ]
   else:
     FLAGS += [ "-O3" ]
+    DEFINE += [ "SOL_RELEASE" ]
 
   # Handle "nojit" option -- compile with normal embedded Lua instead
   if "nojit" in sys.argv:

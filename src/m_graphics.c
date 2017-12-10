@@ -65,9 +65,11 @@ static int l_graphics_init(lua_State *L) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     luaL_error(L, "could not init video");
   }
+  #ifdef SOL_RELEASE
   /* Fix output rerouting */
-  // freopen( "CON", "w", stdout );
-  // freopen( "CON", "w", stderr );
+  freopen( "CON", "w", stdout );
+  freopen( "CON", "w", stderr );
+  #endif
   /* Init SDL video */
   resetVideoMode(L);
   /* Required to get the associated character when a key is pressed. This has
