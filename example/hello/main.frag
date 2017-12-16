@@ -1,6 +1,7 @@
 #version 120
 
-uniform sampler2D tex;
+// uniform sampler2D tex;
+uniform sampler2D mex;
 uniform float elapsed;
 
 vec2 radialDistortion(vec2 coord, float dist) {
@@ -23,8 +24,9 @@ vec4 effect(sampler2D tex, vec2 tc) {
 
 
 void main() {
-  float x = gl_TexCoord[0].x;
-  float y = gl_TexCoord[0].y;
-  vec2 tc = vec2(x + sin(y * 30 + elapsed) * 10 / 1000, y);
-  gl_FragColor = effect(tex, tc) + vec4(-.2, -.1, .1, 0);
+  // float x = gl_TexCoord[0].x;
+  // float y = gl_TexCoord[0].y;
+  // vec2 tc = vec2(x + sin(y * 30 + elapsed) * 10 / 1000, y);
+  // gl_FragColor = effect(tex, tc) + vec4(-.2, -.1, .1, 0);
+  gl_FragColor = texture2D(mex, gl_TexCoord[0].xy);
 }

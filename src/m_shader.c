@@ -63,7 +63,6 @@ static int l_shader_fromString(lua_State *L) {
 static int l_shader_fromFile(lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
   GLchar *source = fs_read(filename, NULL);
-  TRACE("\n%s\n%s\n", filename, source);
   Shader *self = shader_new(L);
   self->program =  glCreateProgram();
   #include "default_vert.h"
@@ -107,19 +106,36 @@ static int l_shader_getWarnings(lua_State *L) {
 static int l_shader_uniform(lua_State *L) {
   Shader *self = luaL_checkudata(L, 1, CLASS_NAME);
   const char * name = luaL_checkstring(L, 2);
-  // GLint uniform = glGetUniformLocation(self->program, name);
+  GLint uniform = glGetUniformLocation(self->program, name);
   // glUniform1f(uniform, time_getDelta());
 
   switch (lua_type(L, 3)) {
     case LUA_TNIL: case LUA_TSTRING: case LUA_TFUNCTION:
     case LUA_TTHREAD: case LUA_TLIGHTUSERDATA:
       luaL_argerror(L, 3, "unsupported uniform type"); break;
-    case LUA_TNUMBER:
-    case LUA_TBOOLEAN:
-    case LUA_TTABLE: TRACE("SOL_DEBUG: %s\n", lua_typename(L, lua_type(L, 3))); break;
+    case LUA_TTABLE: {
+      int idx = lua_absindex(L, 3);
+     /* table is in the stack at index 't' */
+     lua_pushnil(L);  /* first key */
+     while (lua_next(L, idx) != 0) {
+       /* uses 'key' (at index -2) and 'value' (at index -1) */
+       printf("%s - %s\n",
+              lua_typename(L, lua_type(L, -2)),
+              lua_typename(L, lua_type(L, -1)));
+       /* removes 'value'; keeps 'key' for next iteration */
+       lua_pop(L, 1);
+     }
+    }
+
+    case LUA_TNUMBER: case LUA_TBOOLEAN:
+      glUniform1f(uniform, luaL_optnumber(L, 3, 0));
+      break;
     case LUA_TUSERDATA: {
-      // Buffer *buf = luaL_checkudata(L, 3, BUFFER_CLASS_NAME);
-      TRACE("SOL_DEBUG: %s\n", BUFFER_CLASS_NAME); break;
+      sr_Buffer *b = ((Buffer*)luaL_checkudata(L, 3, BUFFER_CLASS_NAME))->buffer;
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->w, b->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, b->pixels);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      break;
+      default: luaL_argerror(L, 3, "expected argument, got nil");
     }
   }
   return 0;
