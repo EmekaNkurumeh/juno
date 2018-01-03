@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "lib/sera/sera.h"
 #include "util.h"
 #include "luax.h"
@@ -25,26 +25,22 @@ static int screenRef = 0;
 static int fullscreen = 0;
 static int resizable = 0;
 static int borderless = 0;
+
+static SDL_Window *m_graphics_window;
 Buffer *m_graphics_screen;
 
 
 static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
-  int flags = (fullscreen ? SDL_FULLSCREEN : 0) |
-              (resizable  ? SDL_RESIZABLE : 0)  |
+  int flags = (resizable  ? SDL_RESIZABLE : 0)  |
               (borderless ? SDL_NOFRAME : 0);
-  const SDL_VideoInfo* info = SDL_GetVideoInfo();
-  if (!info) {
-    luaL_error(L," video query failed: %s", SDL_GetError());
-  }
-  int bpp = info->vfmt->BitsPerPixel;
-  if (SDL_SetVideoMode(screenWidth, screenHeight, bpp, flags) == 0) {
-    luaL_error(L, "could not set video mode: %s", SDL_GetError());
-  }
+  
+  SDL_SetWindowSize(m_graphics_window, screenWidth, screenHeight);
+  
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
-    b->pixels = (void*) SDL_GetVideoSurface()->pixels;
+    b->pixels = (void*) SDL_GetWindowSurface(m_graphics_window)->pixels;
     b->w = screenWidth;
     b->h = screenHeight;
     sr_setClip(b, sr_rect(0, 0, b->w, b->h));
@@ -93,24 +89,13 @@ static int l_graphics_setSize(lua_State *L) {
   int width = luaL_optnumber(L, 1, screenWidth);
   int height = luaL_optnumber(L, 2, screenHeight);
   int isEvent = luax_optboolean(L, 3, 0);
-  if (!isEvent) {
-    resetVideoMode(L);
-  } else {
-    /* Reset screen buffer */
-    if (m_graphics_screen) {
-      sr_Buffer *b = m_graphics_screen->buffer;
-      b->pixels = (void*)SDL_GetVideoSurface()->pixels;
-      b->w = width;
-      b->h = height;
-      sr_setClip(b, sr_rect(0, 0, b->w, b->h));
-    }
-  }
+  SDL_SetWindowSize(m_graphics_window, width, height);
   return 0;
 }
 
 static int l_graphics_setFullscreen(lua_State *L) {
   fullscreen = luax_optboolean(L, 1, 0);
-  resetVideoMode(L);
+  SDL_SetWindowFullscreen(m_graphics_window, fullscren ? SDL_WINDOW_FULLSCREEN : 0);
   return 0;
 }
 
