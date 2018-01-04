@@ -124,6 +124,5 @@ end
 
 function sol.onDraw()
   local sx, sy = math.floor(sol.graphics.getWidth() / G.width), math.floor(sol.graphics.getHeight() / G.height)
-  print(sx, sy, sol.graphics.getWidth(), sol.graphics.getHeight())
   sol.graphics.draw(G.field, 0, 0, nil, nil, sx, sy)
 end

@@ -178,51 +178,56 @@ end
 
 function sol.debug._onEvent(e)
   -- Handle console's keyboard input
-  if e.type == "keydown" and enabled and focused then
-    if e.key == "backspace" then
-      local _, temp = slice(outputbuf, cursor)
-      size = math.max(0, #outputbuf - 1)
-      cursor = math.max(0, cursor - 1)
-      outputbuf = _:sub(1, #_ - 1) .. temp
-      size = #outputbuf
-      history[1] = outputbuf
-    elseif e.key == "tab" then
-      local _, temp = slice(outputbuf, cursor)
-      cursor = cursor + 2
-      outputbuf = _ .. "  " .. temp
-      size = #outputbuf
-      history[1] = outputbuf
-    elseif e.key == "home" then
-      cursor = 0
-    elseif e.key == "end" then
-      cursor = size
-    elseif e.key == "right" then
-      cursor = math.min(#outputbuf, cursor + 1)
-    elseif e.key == "left" then
-      cursor = math.max(0, cursor - 1)
-    elseif e.key == "up" then
-      vursor = math.min(#history,vursor + 1)
-      outputbuf = history[vursor]
-      size = #outputbuf
-      cursor = size
-    elseif e.key == "down" then
-      vursor = math.max(1,vursor - 1)
-      outputbuf = history[vursor]
-      size = #outputbuf
-      cursor = size
-    elseif e.key == "return" then
-      local fn, err = loadstring(outputbuf, "=input")
-      if fn then
-        xpcall(fn, onError)
-      else
-        onError(err)
+  if enabled and focused then
+    if e.type == "keydown" then
+      if e.key == "backspace" then
+        local _, temp = slice(outputbuf, cursor)
+        size = math.max(0, #outputbuf - 1)
+        cursor = math.max(0, cursor - 1)
+        outputbuf = _:sub(1, #_ - 1) .. temp
+        size = #outputbuf
+        history[1] = outputbuf
+      elseif e.key == "tab" then
+        local _, temp = slice(outputbuf, cursor)
+        cursor = cursor + 2
+        outputbuf = _ .. "  " .. temp
+        size = #outputbuf
+        history[1] = outputbuf
+      elseif e.key == "home" then
+        cursor = 0
+      elseif e.key == "end" then
+        cursor = size
+      elseif e.key == "right" then
+        cursor = math.min(#outputbuf, cursor + 1)
+      elseif e.key == "left" then
+        cursor = math.max(0, cursor - 1)
+      elseif e.key == "up" then
+        vursor = math.min(#history,vursor + 1)
+        outputbuf = history[vursor]
+        size = #outputbuf
+        cursor = size
+      elseif e.key == "down" then
+        vursor = math.max(1,vursor - 1)
+        outputbuf = history[vursor]
+        size = #outputbuf
+        cursor = size
+      elseif e.key == "return" then
+        local fn, err = loadstring(outputbuf, "=input")
+        if fn then
+          xpcall(fn, onError)
+        else
+          onError(err)
+        end
+        table.insert(history, 2, outputbuf)
+        outputbuf = ""
+        inputbuf, enputbuf = "", ""
+        size, cursor = 0, 0
+        history[1] = ""
       end
-      table.insert(history, 2, outputbuf)
-      outputbuf = ""
-      inputbuf, enputbuf = "", ""
-      size, cursor = 0, 0
-      history[1] = ""
-    elseif e.type == "textinput" then
+    end
+    print(e.type)
+    if e.type == "textinput" then
+      print(e.text)
       local _, temp = slice(outputbuf, cursor)
       cursor = cursor + #e.text
       outputbuf = _ .. e.text .. temp

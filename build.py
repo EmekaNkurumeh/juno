@@ -29,7 +29,7 @@ if platform.system() == "Windows":
 
 if platform.system() == "Linux":
   LINK += [ "luajit-5.1", "SD2Lmain", "SDL2" ]
-  # DEFINE += [ "SR_MODE_ABGR" ]
+  DEFINE += [ "SR_MODE_ABGR" ]
 
 
 if platform.system() == "Darwin":
