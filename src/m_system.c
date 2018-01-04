@@ -6,7 +6,7 @@
  */
 
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "util.h"
 #include "luax.h"
 
@@ -21,11 +21,11 @@
 
 static const char *buttonStr(int id) {
   switch (id) {
-    case 1  : return "left";
-    case 2  : return "middle";
-    case 3  : return "right";
-    case 4  : return "wheelup";
-    case 5  : return "wheeldown";
+    case SDL_BUTTON_LEFT   : return "left";
+    case SDL_BUTTON_MIDDLE : return "middle";
+    case SDL_BUTTON_RIGHT  : return "right";
+    case SDL_BUTTON_X1     : return "wheelup";
+    case SDL_BUTTON_X2     : return "wheeldown";
     default : return "?";
   }
 }
@@ -60,32 +60,31 @@ static int l_system_poll(lua_State *L) {
       //  luax_setfield_number(L, "height", e.resize.h);
       //  break;
 
-      // /* TODO: */
-      case SDL_VIDEORESIZE:
-      //  lua_getfield(L, -3, "setSize");
-      //  lua_pushnumber(L, e.resize.w);
-      //  lua_pushnumber(L, e.resize.h);
-      //  luax_call(L, 2, 0);
-       luax_setfield_string(L, "type", "resize");
-       luax_setfield_number(L, "width", e.resize.w);
-       luax_setfield_number(L, "height", e.resize.h);
-       break;
+      case SDL_WINDOWEVENT: {
+        switch (e.window.event) {
+          case SDL_WINDOWEVENT_RESIZED:
+          luax_setfield_string(L, "type", "resize");
+          luax_setfield_number(L, "width", e.window.data1);
+          luax_setfield_number(L, "height", e.window.data2);
+          break;
+        }
+      }
 
-      case SDL_KEYDOWN: {
+      case SDL_KEYDOWN:
         luax_setfield_string(L, "type", "keydown");
         luax_setfield_fstring(L, "key", "%s",
                               SDL_GetKeyName(e.key.keysym.sym));
-        int c = keyChar(e.key.keysym.unicode);
-        if (c) {
-          luax_setfield_fstring(L, "char", "%c", c);
-        }
         break;
-      }
 
       case SDL_KEYUP:
         luax_setfield_string(L, "type", "keyup");
         luax_setfield_fstring(L, "key", "%s",
                               SDL_GetKeyName(e.key.keysym.sym));
+        break;
+
+      case SDL_TEXTINPUT:
+        luax_setfield_string(L, "type", "textinput");
+        luax_setfield_fstring(L, "text", "%s", e.text.text);
         break;
 
       case SDL_MOUSEMOTION:

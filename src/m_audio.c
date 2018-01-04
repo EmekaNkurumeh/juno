@@ -6,7 +6,7 @@
  */
 
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "luax.h"
 #include "util.h"
 #include "m_source.h"

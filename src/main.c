@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "lib/sera/sera.h"
 #include "util.h"
 #include "luax.h"
@@ -19,6 +19,7 @@
 
 extern double m_graphics_maxFps;
 extern Buffer* m_graphics_screen;
+extern SDL_Window *m_graphics_window;
 
 static lua_State *L;
 static SDL_mutex *luaMutex;
@@ -28,6 +29,7 @@ static void shutdown(void) {
   SDL_UnlockMutex(luaMutex);
   SDL_Quit();
 #endif
+  SDL_DestroyWindow(m_graphics_window);
 }
 
 int luaopen_sol(lua_State *L);
@@ -102,7 +104,7 @@ int main(int argc, char **argv) {
   double last = 0;
   SDL_Surface *screen;
   for (;;) {
-    screen = SDL_GetVideoSurface();
+    screen = SDL_GetWindowSurface(m_graphics_window);
     if (screen && SDL_MUSTLOCK(screen)) SDL_LockSurface(screen);
     ASSERT(SDL_LockMutex(luaMutex) == 0);
     lua_getglobal(L, "sol");
@@ -120,10 +122,9 @@ int main(int argc, char **argv) {
     }
     ASSERT(SDL_UnlockMutex(luaMutex) == 0);
     if (screen && SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
-    /* Flip -- this blocks on some platforms (OSX) */
-    SDL_Surface *screen = SDL_GetVideoSurface();
+    SDL_Surface *screen = SDL_GetWindowSurface(m_graphics_window);
     if (screen) {
-      SDL_Flip(screen);
+      SDL_UpdateWindowSurface(m_graphics_window);
     }
     /* Wait for next frame */
     double step = (1. / m_graphics_maxFps);

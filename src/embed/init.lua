@@ -80,6 +80,9 @@ local eventHandlers = {
   quit = function(e)
     sol.system.quit()
     end,
+  textinput = function(e)
+    call(sol.onTextInput, e.text)
+    end,
 }
 
 local function onStepMain()
@@ -185,7 +188,7 @@ function sol.onError(msg, stacktrace)
   local alpha = 0
 
   function sol.onUpdate()
-    -- The initialisation of the error state's graphics is defered to the
+    -- The initialization of the error state's graphics is defered to the
     -- first onUpdate() call in case the error occurs in the audio thread in
     -- which case it won't be able to change the openGL state
     sol.graphics.reset()

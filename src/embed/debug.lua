@@ -222,10 +222,10 @@ function sol.debug._onEvent(e)
       inputbuf, enputbuf = "", ""
       size, cursor = 0, 0
       history[1] = ""
-    elseif e.char then
+    elseif e.type == "textinput" then
       local _, temp = slice(outputbuf, cursor)
-      cursor = cursor + 1
-      outputbuf = _ .. e.char .. temp
+      cursor = cursor + #e.text
+      outputbuf = _ .. e.text .. temp
       size = #outputbuf
       history[1] = outputbuf
     end

@@ -12,7 +12,7 @@
   #include <sys/time.h>
 #endif
 #include "luax.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <time.h>
 
 static int l_time_getNow(lua_State *L) {

@@ -7,7 +7,7 @@
 
 
 #include "luax.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define SOL_VERSION "0.3.0"
 

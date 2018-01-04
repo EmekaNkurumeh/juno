@@ -26,17 +26,16 @@ static int fullscreen = 0;
 static int resizable = 0;
 static int borderless = 0;
 
-static SDL_Window *m_graphics_window;
+SDL_Window *m_graphics_window;
 Buffer *m_graphics_screen;
 
 
 static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
-  int flags = (resizable  ? SDL_RESIZABLE : 0)  |
-              (borderless ? SDL_NOFRAME : 0);
-  
   SDL_SetWindowSize(m_graphics_window, screenWidth, screenHeight);
-  
+  SDL_SetWindowResizable(m_graphics_window, resizable ? SDL_TRUE : SDL_FALSE);
+  // SDL_SetWindowBordered(m_graphics_window, borderless ? SDL_TRUE : SDL_FALSE);
+
   /* Reset screen buffer */
   if (m_graphics_screen) {
     sr_Buffer *b = m_graphics_screen->buffer;
@@ -66,17 +65,18 @@ static int l_graphics_init(lua_State *L) {
   freopen( "CON", "w", stdout );
   freopen( "CON", "w", stderr );
   #endif
+  /* Create the main window */
+  m_graphics_window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+  if (!m_graphics_window) {
+    luaL_error(L, "could not create window %s", SDL_GetError());
+  }
   /* Init SDL video */
   resetVideoMode(L);
-  /* Required to get the associated character when a key is pressed. This has
-   * to be enabled *after* SDL video is set up */
-  SDL_EnableUNICODE(1);
-  /* Init window title */
-  SDL_WM_SetCaption(title, title);
   /* Create, store in registry and return main screen buffer */
   m_graphics_screen = buffer_new(L);
   m_graphics_screen->buffer = sr_newBufferShared(
-    SDL_GetVideoSurface()->pixels, screenWidth, screenHeight);
+    SDL_GetWindowSurface(m_graphics_window)->pixels, screenWidth, screenHeight);
   lua_pushvalue(L, -1);
   screenRef = lua_ref(L, LUA_REGISTRYINDEX);
   /* Set state */
@@ -95,7 +95,7 @@ static int l_graphics_setSize(lua_State *L) {
 
 static int l_graphics_setFullscreen(lua_State *L) {
   fullscreen = luax_optboolean(L, 1, 0);
-  SDL_SetWindowFullscreen(m_graphics_window, fullscren ? SDL_WINDOW_FULLSCREEN : 0);
+  SDL_SetWindowFullscreen(m_graphics_window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
   return 0;
 }
 

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "lib/sera/sera.h"
 #include "util.h"
 #include "luax.h"

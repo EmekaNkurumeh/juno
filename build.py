@@ -13,7 +13,8 @@ SOURCE = [
   "src/lib/sera/*.c",
   "src/lib/stb_vorbis.c",
 ]
-FLAGS = [ "-Wall", "-Wextra", "--std=c99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
+# FLAGS = [ "-Wall", "-Wextra", "--std=c99", "-fno-strict-aliasing", "-Wno-unused-value", "-Wno-misleading-indentation" ]
+FLAGS = [ "-Wall", "-Wextra", "--std=c99", "-fno-strict-aliasing", "-Wno-unused-value" ]
 LINK = [ "m" ]
 LINKER = [  ]
 DEFINE = [  ]
@@ -22,21 +23,21 @@ EXTRA = [  ]
 if platform.system() == "Windows":
   sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
   OUTPUT += ".exe"
-  LINK += [ "mingw32", "lua51", "SDLmain", "SDL", "opengl32" ]
+  LINK += [ "mingw32", "lua51", "SDL2main", "SDL2" ]
   FLAGS += [ "-mwindows" ]
-  
+
 
 if platform.system() == "Linux":
-  LINK += [ "luajit-5.1", "SDLmain", "SDL", "GL" ]
-  DEFINE += [ "SR_MODE_ABGR" ]
+  LINK += [ "luajit-5.1", "SD2Lmain", "SDL2" ]
+  # DEFINE += [ "SR_MODE_ABGR" ]
 
 
 if platform.system() == "Darwin":
-  FLAGS += [ os.popen("sdl-config --cflags").read().strip() ]
-  EXTRA += [ os.popen("sdl-config --libs").read().strip(), "-framework OpenGL" ]
+  FLAGS += [ os.popen("sdl2-config --cflags").read().strip() ]
+  EXTRA += [ os.popen("sdl2-config --libs").read().strip() ]
   LINK += [ "luajit-5.1" ]
   FLAGS += [ "-pagezero_size 10000", "-image_base 100000000" ]
-  DEFINE += [ "SR_MODE_ARGB" ]
+  # DEFINE += [ "SR_MODE_ARGB" ]
 
 
 def fmt(fmt, dic):
