@@ -52,4 +52,3 @@ function sol.keyboard.wasPressed(...)
   end
   return false
 end
-

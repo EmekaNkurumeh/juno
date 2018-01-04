@@ -30,11 +30,12 @@ SDL_Window *m_graphics_window;
 Buffer *m_graphics_screen;
 
 
-static void resetVideoMode(lua_State *L) {
+// static void resetVideoMode(lua_State *L) {
+static void resetVideoMode() {
   /* Reset video mode */
   SDL_SetWindowSize(m_graphics_window, screenWidth, screenHeight);
   SDL_SetWindowResizable(m_graphics_window, resizable ? SDL_TRUE : SDL_FALSE);
-  // SDL_SetWindowBordered(m_graphics_window, borderless ? SDL_TRUE : SDL_FALSE);
+  SDL_SetWindowBordered(m_graphics_window, borderless ? SDL_FALSE : SDL_TRUE);
 
   /* Reset screen buffer */
   if (m_graphics_screen) {
@@ -54,6 +55,7 @@ static int l_graphics_init(lua_State *L) {
   fullscreen = luax_optboolean(L, 4, 0);
   resizable = luax_optboolean(L, 5, 0);
   borderless = luax_optboolean(L, 6, 0);
+  
   if (inited) {
     luaL_error(L, "graphics are already inited");
   }
@@ -72,7 +74,7 @@ static int l_graphics_init(lua_State *L) {
     luaL_error(L, "could not create window %s", SDL_GetError());
   }
   /* Init SDL video */
-  resetVideoMode(L);
+  resetVideoMode();
   /* Create, store in registry and return main screen buffer */
   m_graphics_screen = buffer_new(L);
   m_graphics_screen->buffer = sr_newBufferShared(

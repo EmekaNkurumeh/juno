@@ -53,13 +53,19 @@ end
 
 local eventHandlers = {
   keydown = function(e)
+    e.key = e.key:lower()
     call(sol.debug._onEvent, e)
     call(sol.keyboard._onEvent, e)
-    call(sol.onKeyDown, e.key, e.char)
+    call(sol.onKeyDown, e.key)
     end,
   keyup = function(e)
+    e.key = e.key:lower()
     call(sol.keyboard._onEvent, e)
     call(sol.onKeyUp, e.key)
+    end,
+  textinput = function(e)
+    call(sol.debug._onEvent, e)
+    call(sol.onTextInput, e.text)
     end,
   mousemove = function(e)
     call(sol.mouse._onEvent, e)
@@ -79,9 +85,6 @@ local eventHandlers = {
     end,
   quit = function(e)
     sol.system.quit()
-    end,
-  textinput = function(e)
-    call(sol.onTextInput, e.text)
     end,
 }
 

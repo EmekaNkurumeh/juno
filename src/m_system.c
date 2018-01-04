@@ -30,9 +30,6 @@ static const char *buttonStr(int id) {
   }
 }
 
-static char keyChar(char c) {
-  return (c == '\r') ? '\n' : c;
-}
 
 static int l_system_poll(lua_State *L) {
   /* Create events table */
@@ -48,17 +45,6 @@ static int l_system_poll(lua_State *L) {
       case SDL_QUIT:
         luax_setfield_string(L, "type", "quit");
         break;
-
-      // /* TODO: */
-      //case SDL_VIDEORESIZE:
-      //  lua_getfield(L, -3, "setSize");
-      //  lua_pushnumber(L, e.resize.w);
-      //  lua_pushnumber(L, e.resize.h);
-      //  luax_call(L, 2, 0);
-      //  luax_setfield_string(L, "type", "resize");
-      //  luax_setfield_number(L, "width", e.resize.w);
-      //  luax_setfield_number(L, "height", e.resize.h);
-      //  break;
 
       case SDL_WINDOWEVENT: {
         switch (e.window.event) {
