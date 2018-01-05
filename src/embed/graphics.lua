@@ -79,6 +79,7 @@ end
 
 function sol.graphics._onEvent(e)
   if e.type == "resize" then
+    local w, h = sol.graphics.getSize()
     sol.graphics.setSize(e.width, e.height)
   end
 end

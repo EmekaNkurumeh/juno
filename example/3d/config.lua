@@ -36,5 +36,6 @@ colors = {
 return {
   title = G.title,
   width = G.width*G.scale,
-  height= G.height*G.scale
+  height= G.height*G.scale,
+  resizeable = true
 }

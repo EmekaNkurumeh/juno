@@ -46,7 +46,7 @@ static int l_system_poll(lua_State *L) {
         luax_setfield_string(L, "type", "quit");
         break;
 
-      case SDL_WINDOWEVENT: {
+      case SDL_WINDOWEVENT:
         switch (e.window.event) {
           case SDL_WINDOWEVENT_RESIZED:
           luax_setfield_string(L, "type", "resize");
@@ -54,7 +54,7 @@ static int l_system_poll(lua_State *L) {
           luax_setfield_number(L, "height", e.window.data2);
           break;
         }
-      }
+        break;
 
       case SDL_KEYDOWN:
         luax_setfield_string(L, "type", "keydown");
