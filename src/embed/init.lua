@@ -80,7 +80,6 @@ local eventHandlers = {
     call(sol.onMouseUp, e.x, e.y, e.button)
     end,
   resize = function(e)
-    print("wild")
     call(sol.graphics._onEvent, e)
     call(sol.onResize, e.width, e.height)
     end,

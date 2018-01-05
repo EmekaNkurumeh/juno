@@ -10,8 +10,8 @@ local init = sol.graphics.init
 
 sol.graphics.init = function(...)
   -- Do init
-  screen = init(...)
-  sol.graphics.screen = screen
+  sol.graphics.screen = init(...)
+  screen = sol.graphics.screen
   -- Bind the screen buffer's methods to the graphics module
   for k, v in pairs(sol.Buffer) do
     if not sol.graphics[k] then
@@ -48,33 +48,33 @@ function sol.graphics.getClearColor(...)
 end
 
 
--- local currentBuffer = sol.graphics.screen
---
--- function sol.graphics.setBuffer(buf)
---   local buf = buf or sol.graphics.screen
---   if buf ~= currentBuffer then
---     for k, v in pairs(sol.graphics) do
---       print(k, buf[k])
---       if type(v) == "function" then
---         sol.graphics[k] = function(...)
---           if not buf[k] then
---             return v(...)
---           else
---             return buf[k](buf, ...)
---           end
---         end
---       end
---     end
---     currentBuffer = buf
---   end
--- end
---
---
--- function sol.graphics.withBuffer(func, buf)
---   sol.graphics.setBuffer(buf)
---   func()
---   sol.graphics.setBuffer()
--- end
+local currentBuffer = sol.graphics.screen
+
+function sol.graphics.setBuffer(buf)
+  local buf = buf or sol.graphics.screen
+  if buf ~= currentBuffer then
+    for k, v in pairs(sol.graphics) do
+      if type(v) == "function" then
+        sol.graphics[k] = function(...)
+          local gfunc = v
+          if not buf[k] or k == "clear" then
+            return gfunc(...)
+          else
+            return buf[k](buf, ...)
+          end
+        end
+      end
+    end
+    currentBuffer = buf
+  end
+end
+
+
+function sol.graphics.withBuffer(func, buf)
+  sol.graphics.setBuffer(buf)
+  func()
+  sol.graphics.setBuffer()
+end
 
 
 function sol.graphics._onEvent(e)
