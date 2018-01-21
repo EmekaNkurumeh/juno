@@ -1,7 +1,7 @@
 
 G = {
-  width   = 150,
-  height  = 150,
+  width   = 128,
+  height  = 128,
   scale   = 4,
 }
 
