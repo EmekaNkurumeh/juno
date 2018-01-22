@@ -3,7 +3,6 @@
 function sol.onLoad(dt)
   sol.debug.setVisible(true)
   G.field = sol.Buffer.fromBlank(G.width, G.height)
-  G.field:drawBox(0, 0, G.width, G.height, 1, 1, 1)
   G.field:drawRing(G.width / 2,  G.width / 2, G.width / 2 - 1, 1, 1, 1)
   G.tickTimer = 0
   -- Initialise player
@@ -117,10 +116,10 @@ function sol.onUpdate(dt)
     G.tickTimer = G.tickTimer + .03
   end
   -- Player is dead? Restart the game
-  -- if G.player.dead then
-  --   sol.onLoad()
-  --   rotation = 0
-  -- end
+  if G.player.dead then
+    sol.onLoad()
+    rotation = 0
+  end
   rotation = rotation + dt
 end
 
@@ -140,5 +139,5 @@ function sol.onDraw()
   local y = tempX * math.sin(rotation) + tempY * math.cos(rotation)
 
 
-  sol.graphics.draw(G.field, 0, 0, nil, rotation, sx, sy, (G.width / 2),  (G.height / 2))
+  sol.graphics.draw(G.field, (G.width * sx / 2),  (G.height * sy / 2), nil, rotation, sx, sy, (G.width / 2),  (G.height / 2))
 end
