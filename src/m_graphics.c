@@ -35,7 +35,7 @@ static void resetVideoMode(lua_State *L) {
   /* Reset video mode */
   SDL_SetWindowFullscreen(m_graphics_window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   SDL_SetWindowSize(m_graphics_window, screenWidth, screenHeight);
-  SDL_SetWindowResizable(m_graphics_window, resizable ? SDL_FALSE : SDL_TRUE);
+  SDL_SetWindowResizable(m_graphics_window, resizable ? SDL_TRUE : SDL_FALSE);
   SDL_SetWindowBordered(m_graphics_window, borderless ? SDL_FALSE : SDL_TRUE);
 
   /* Reset screen buffer */

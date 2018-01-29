@@ -10,5 +10,4 @@ return {
   title   = "Polygon",
   width   = G.width * G.scale,
   height  = G.height * G.scale,
-  borderless = false,
 }
